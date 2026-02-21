@@ -7,22 +7,23 @@ A highly productive Tmux configuration (`.tmux.conf`) optimized for seamless mou
 You can easily set up this configuration on any new machine using the provided automated installation script.
 
 1. Clone this repository to your local machine:
-```bash
+```shell
 git clone git@github.com:choridev/environment-settings.git
 cd environment-settings/tmux
 ```
 
 2. Make the script executable:
-```bash
+```shell
 chmod +x install.sh
 ```
 
 3. Run the installation script:
-```bash
+```shell
 ./install.sh
 ```
 
-> **Note**: The script will automatically install [TPM (Tmux Plugin Manager)](https://github.com/tmux-plugins/tpm), copy the `.tmux.conf` file to your home directory, and install the required plugins.
+> [!NOTE]
+> The script is **idempotent and safe**. It checks for dependencies (`git`, `tmux`), safely backs up any existing `.tmux.conf`, installs [TPM (Tmux Plugin Manager)](https://github.com/tmux-plugins/tpm), creates a **symbolic link** (`~/.tmux.conf -> repo/.tmux.conf`) for real-time synchronization, and auto-installs all required plugins.
 
 ## ✨ Features & Plugins
 
@@ -30,6 +31,7 @@ chmod +x install.sh
 - **System Clipboard Integration**: Uses OSC 52 to synchronize copied text inside Tmux directly to your local OS clipboard (`set-clipboard on`).
 - **Vim-style Copy Mode**: Navigate and copy text in Tmux just like you do in Vim.
 - **[tmux-yank](https://github.com/tmux-plugins/tmux-yank)**: A plugin that enables copying to the system clipboard in Tmux.
+- **True Color & SSH Fallbacks**: The configuration includes neatly organized, commented-out settings for 256/True Color overrides and manual OSC 52 escape sequences. Easily uncomment them if you experience color degradation or clipboard syncing issues over specific SSH environments.
 
 ## ⌨️ Key Mappings (Copy Mode)
 
