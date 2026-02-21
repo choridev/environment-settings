@@ -1,0 +1,32 @@
+# ==========================================
+# 1. Include Local Settings (Personal info & Keys)
+# ==========================================
+[include]
+    # User name, email, and signing keys are managed separately in this local file
+    # This file should NOT be committed to the GitHub repository
+    path = ~/.gitconfig.local
+
+# ==========================================
+# 2. Core Settings
+# ==========================================
+[init]
+    defaultBranch = main
+[core]
+    editor = vim
+[fetch]
+    prune = true
+
+# ==========================================
+# 3. Commit & SSH Signing
+# ==========================================
+[commit]
+    gpgsign = true
+[gpg]
+    format = ssh
+
+# ==========================================
+# 4. Aliases
+# ==========================================
+[alias]
+    lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
