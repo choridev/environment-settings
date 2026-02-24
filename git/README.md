@@ -43,6 +43,7 @@ During the installation script, you will be prompted to enter:
 - **Default Editor**: Set to `vim` for seamless commit message editing.
 - **Auto Prune**: Automatically removes remote-tracking references that no longer exist on the remote when fetching (`fetch.prune = true`).
 - **Default Branch**: Sets `main` as the default branch name when initializing new repositories.
+- **Auto Setup Remote**: Automatically sets the upstream tracking branch and creates it on the remote repository when you run `git push` for a newly created local branch (`push.autoSetupRemote = true`). No more typing `--set-upstream`!
 
 ### Commit Signing
 - **SSH GPG Signing**: Configured to sign commits using SSH keys instead of traditional GPG keys (`gpgsign = true`, `gpg.format = ssh`).
