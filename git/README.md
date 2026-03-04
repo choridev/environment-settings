@@ -50,4 +50,3 @@ During the installation script, you will be prompted to enter:
 
 ### Aliases
 - `git lg`: A highly customized, colorful, and graph-based Git log. It displays the commit hash, branch indicators, commit message, relative time, and author name in a beautiful one-line format.
-

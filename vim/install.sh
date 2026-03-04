@@ -56,4 +56,3 @@ vim +PlugInstall +qall
 
 echo ""
 echo "🎉 All set! Open your terminal and type 'vim' to enjoy your new setup."
-

@@ -67,4 +67,3 @@ fi
 
 echo ""
 echo "🎉 All set! Your Git environment is ready to use."
-

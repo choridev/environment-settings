@@ -62,4 +62,3 @@ echo "✅ Plugins installed!"
 
 echo ""
 echo "🎉 All set! Open your terminal and type 'tmux' to enjoy your new setup."
-

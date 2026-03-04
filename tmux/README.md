@@ -40,4 +40,3 @@ When you enter copy mode (by scrolling up with your mouse or pressing `Ctrl + b`
 - `v`: Begin text selection (Visual mode).
 - `Ctrl + v` (`<C-v>`): Toggle rectangle (block) selection.
 - `y`: Yank (copy) the selected text to the system clipboard and exit copy mode.
-

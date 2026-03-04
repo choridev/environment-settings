@@ -53,4 +53,3 @@ Overrides default search keys to show the search status position.
 - `N`: Go to the previous search result (with status echo).
 - `*`: Search forward for the word under the cursor (with status echo).
 - `#`: Search backward for the word under the cursor (with status echo).
-
