@@ -10,25 +10,41 @@ for cmd in nvim git; do
     fi
 done
 
-# 1. Check for the config files (init.lua)
-echo "🔍 1/5: Checking for Neovim config files..."
-if [ ! -f "init.lua" ]; then
-    echo "❌ Error: 'init.lua' not found in the current directory."
-    echo "Please run this script from inside your cloned nvim directory."
-    exit 1
+# 1. Check Neovim Version (Must be >= 0.11.0 to avoid lspconfig deprecation warning)
+MIN_VERSION="0.11.0"
+CURRENT_VERSION=$(nvim --version | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+
+echo "🔍 1/6: Checking Neovim version..."
+if [ -n "$CURRENT_VERSION" ]; then
+    LOWEST_VERSION=$(printf '%s\n' "$MIN_VERSION" "$CURRENT_VERSION" | sort -V | head -n1)
+    if [ "$LOWEST_VERSION" != "$MIN_VERSION" ]; then
+        echo "❌ Error: Neovim version must be >= $MIN_VERSION to use latest plugins."
+        echo "Your current version is $CURRENT_VERSION."
+        echo "Please upgrade Neovim to 0.11+ first."
+        exit 1
+    fi
+    echo "✅ Neovim version ($CURRENT_VERSION) is $MIN_VERSION or higher!"
+else
+    echo "⚠️ Warning: Could not parse Neovim version. Proceeding anyway..."
 fi
 
-DOTFILES_DIR=$(pwd)
-CONFIG_DIR="$HOME/.config/nvim"
-echo "✅ Config found at $DOTFILES_DIR"
+# 2. Check directory structure
+echo "📂 2/6: Checking directory structure..."
+DOTFILES_DIR="$(pwd)/nvim"
 
-# Ensure ~/.config exists
+if [ ! -f "$DOTFILES_DIR/init.lua" ]; then
+    echo "❌ Error: 'nvim/init.lua' not found."
+    echo "Please make sure you have an 'nvim' folder containing 'init.lua' right next to this script."
+    exit 1
+fi
+echo "✅ Target config directory found at $DOTFILES_DIR"
+
+CONFIG_DIR="$HOME/.config/nvim"
 mkdir -p "$HOME/.config"
 
-# 2. Backup existing configuration safely (Symlink & Directory aware)
-echo "💾 2/5: Checking for existing Neovim configuration..."
+# 3. Backup existing configuration safely
+echo "💾 3/6: Checking for existing Neovim configuration..."
 if [ -d "$CONFIG_DIR" ] || [ -h "$CONFIG_DIR" ]; then
-    # If it is already correctly symlinked, skip the backup
     if [ "$(readlink "$CONFIG_DIR")" = "$DOTFILES_DIR" ]; then
         echo "✅ ~/.config/nvim is already correctly symlinked. Skipping backup."
     else
@@ -40,21 +56,21 @@ else
     echo "✅ No existing nvim config found. Proceeding cleanly."
 fi
 
-# 3. Clean cache & state (Crucial for Neovim to prevent conflicts)
-echo "🧹 3/5: Cleaning up old Neovim state/cache..."
+# 4. Clean cache & state (Crucial)
+echo "🧹 4/6: Cleaning up old Neovim state/cache..."
 rm -rf "$HOME/.local/share/nvim.bak" "$HOME/.local/state/nvim.bak" "$HOME/.cache/nvim.bak" 2>/dev/null
 [ -d "$HOME/.local/share/nvim" ] && mv "$HOME/.local/share/nvim" "$HOME/.local/share/nvim.bak"
 [ -d "$HOME/.local/state/nvim" ] && mv "$HOME/.local/state/nvim" "$HOME/.local/state/nvim.bak"
 [ -d "$HOME/.cache/nvim" ] && mv "$HOME/.cache/nvim" "$HOME/.cache/nvim.bak"
 echo "✅ Old state and cache backed up and cleared."
 
-# 4. Create Symbolic Link
-echo "🔗 4/5: Creating a symbolic link for nvim..."
+# 5. Create Symbolic Link (Only the 'nvim' folder!)
+echo "🔗 5/6: Creating a symbolic link..."
 ln -sfn "$DOTFILES_DIR" "$CONFIG_DIR"
 echo "✅ Symlink created! ($CONFIG_DIR -> $DOTFILES_DIR)"
 
-# 5. Auto-install Neovim plugins via lazy.nvim
-echo "🔌 5/5: Auto-installing Neovim plugins..."
+# 6. Auto-install Neovim plugins via lazy.nvim
+echo "🔌 6/6: Auto-installing Neovim plugins..."
 nvim --headless "+Lazy! sync" +qa
 
 echo ""
