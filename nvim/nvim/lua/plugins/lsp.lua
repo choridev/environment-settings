@@ -1,7 +1,7 @@
 return {
   "mason-org/mason-lspconfig.nvim",
   opts = {
-    ensure_installed = { "lua_ls", "yamlls", "gopls" },
+    ensure_installed = { "lua_ls", "yamlls", "taplo", "marksman", "gopls" },
   },
   dependencies = {
     {
