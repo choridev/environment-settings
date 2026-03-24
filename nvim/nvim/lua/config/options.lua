@@ -31,6 +31,17 @@ opt.splitright = true
 
 -- System & UX
 opt.clipboard = "unnamedplus"
+vim.g.clipboard = {
+  name = 'OSC 52',
+  copy = {
+    ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+    ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+  },
+  paste = {
+    ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+    ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+  },
+}
 opt.mouse:append("a")
 opt.undofile = true
 opt.updatetime = 200
