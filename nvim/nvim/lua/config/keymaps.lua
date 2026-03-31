@@ -12,6 +12,7 @@ mapKey("<leader>fh", ":Telescope help_tags<cr>")
 -- nvim-lspconfig
 mapKey("K", vim.lsp.buf.hover)
 mapKey("gd", vim.lsp.buf.definition)
+mapKey("gr", require("telescope.builtin").lsp_references)
 mapKey("<leader>ca", vim.lsp.buf.code_action)
 
 -- Pane navigation
