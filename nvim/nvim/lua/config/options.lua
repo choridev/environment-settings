@@ -30,18 +30,23 @@ opt.splitbelow = true
 opt.splitright = true
 
 -- System & UX
-opt.clipboard = "unnamedplus"
-vim.g.clipboard = {
-	name = "OSC 52",
-	copy = {
-		["+"] = require("vim.ui.clipboard.osc52").copy("+"),
-		["*"] = require("vim.ui.clipboard.osc52").copy("*"),
-	},
-	paste = {
-		["+"] = require("vim.ui.clipboard.osc52").paste("+"),
-		["*"] = require("vim.ui.clipboard.osc52").paste("*"),
-	},
-}
+if not vim.g.vscode then
+	opt.clipboard = "unnamedplus"
+	vim.g.clipboard = {
+		name = "OSC 52",
+		copy = {
+			["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+			["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+		},
+		paste = {
+			["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+			["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+		},
+	}
+else
+	opt.clipboard = ""
+	vim.g.clipboard = nil
+end
 opt.mouse:append("a")
 opt.undofile = true
 opt.updatetime = 200
