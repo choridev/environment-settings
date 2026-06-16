@@ -10,8 +10,8 @@ for cmd in nvim git; do
     fi
 done
 
-# 1. Check Neovim Version (Must be >= 0.11.0 to avoid lspconfig deprecation warning)
-MIN_VERSION="0.11.0"
+# 1. Check Neovim Version (Must be >= 0.12.0 — required by nvim-treesitter main branch)
+MIN_VERSION="0.12.0"
 CURRENT_VERSION=$(nvim --version | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
 
 echo "🔍 1/6: Checking Neovim version..."
@@ -20,7 +20,7 @@ if [ -n "$CURRENT_VERSION" ]; then
     if [ "$LOWEST_VERSION" != "$MIN_VERSION" ]; then
         echo "❌ Error: Neovim version must be >= $MIN_VERSION to use latest plugins."
         echo "Your current version is $CURRENT_VERSION."
-        echo "Please upgrade Neovim to 0.11+ first."
+        echo "Please upgrade Neovim to 0.12+ first."
         exit 1
     fi
     echo "✅ Neovim version ($CURRENT_VERSION) is $MIN_VERSION or higher!"

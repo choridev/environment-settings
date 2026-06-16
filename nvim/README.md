@@ -3,7 +3,7 @@
 A modern, blazing-fast, and modular Neovim configuration written entirely in Lua. Optimized for development speed, smart auto-completion, and powerful file navigation.
 
 ## ⚠️ Requirements
-- **Neovim 0.11.0+** (Required for the latest LSP and plugin capabilities)
+- **Neovim 0.12.0+** (Required by `nvim-treesitter` main branch)
 - **Git**, **curl**, and **npm** (Required by Mason for installing language servers)
 - A **Nerd Font** (Optional but highly recommended for UI icons and `alpha-nvim` dashboard)
 
@@ -28,7 +28,7 @@ chmod +x install.sh
 ```
 
 > [!NOTE]
-> The script is **idempotent and safe**. It checks for dependencies and the required Neovim version (`>= 0.11.0`). It safely backs up your existing `~/.config/nvim`, clears old Neovim caches/states to prevent conflicts, creates a clean **symbolic link** (`~/.config/nvim -> repo/nvim`), and bootstraps plugins via `lazy.nvim` automatically in headless mode.
+> The script is **idempotent and safe**. It checks for dependencies and the required Neovim version (`>= 0.12.0`). It safely backs up your existing `~/.config/nvim`, clears old Neovim caches/states to prevent conflicts, creates a clean **symbolic link** (`~/.config/nvim -> repo/nvim`), and bootstraps plugins via `lazy.nvim` automatically in headless mode.
 
 ## ✨ Features & Plugins
 
