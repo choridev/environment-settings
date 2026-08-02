@@ -1,6 +1,7 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
-	lazy = false,
+	branch = "main", -- the `require("nvim-treesitter").install()` API below is main-branch only
+	lazy = false, -- registers the FileType autocmd, so it has to run before the first buffer
 	build = ":TSUpdate",
 	config = function()
 		require("nvim-treesitter").install({
