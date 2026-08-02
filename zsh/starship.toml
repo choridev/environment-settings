@@ -1,0 +1,42 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = true
+
+format = """
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$time\
+$cmd_duration\
+$line_break\
+$character"""
+
+[hostname]
+ssh_only = true
+ssh_symbol = 'ssh:'
+
+[directory]
+fish_style_pwd_dir_length = 1
+
+[git_branch]
+symbol = ''
+
+[git_status]
+ahead = '⇡${count}'
+behind = '⇣${count}'
+modified = '!${count}'
+untracked = '?${count}'
+staged = '+${count}'
+
+[time]
+disabled = false
+time_format = "%R UTC"
+utc_time_offset = "0"
+
+[line_break]
+disabled = false
+
+[character]
+success_symbol = '[❯](bold green)'
+error_symbol = '[❯](bold red)'
