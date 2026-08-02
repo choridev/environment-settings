@@ -65,8 +65,10 @@ ssha web          # pick from hosts matching "web"
 
 Reachability is probed with `ssh-keyscan` in the background and cached for a day, so hosts are marked `●` reachable or `○` unreachable in the list. Hosts behind a `ProxyJump` are skipped rather than probed.
 
-> [!NOTE]
-> Probing connects to every non-jumped host in your SSH config. Run `ssha-status` instead if you only want to read the cached result.
+> [!IMPORTANT]
+> **Running `ssha` opens connections to your servers, without asking first.** The sweep starts on its own the first time you run `ssha`, and again whenever the cache is older than 24 hours — you never have to invoke `ssha-check` yourself. It covers every host in `~/.ssh/config` that is not behind a `ProxyJump`, **up to 50 at a time**, so on a large config this is a burst of parallel connections that your network monitoring may read as a port scan.
+>
+> Nothing is authenticated and nothing is sent: `ssh-keyscan -T 5` only asks each host for its public host key. Still, look over your SSH config before the first run, and use `ssha-status` when you just want to read the cached result without touching the network.
 
 ### Commands
 - `ssha [query]`: Open the host picker and connect. Aliased to `sa`.
