@@ -36,6 +36,8 @@ chmod +x install.sh
 - **Plugin Manager**: Powered by **[lazy.nvim](https://github.com/folke/lazy.nvim)** for lazy-loading and incredibly fast startup times.
 - **Language**: 100% Lua configuration for better performance and maintainability.
 - **Indentation**: Standardized to 2 spaces (the global standard for Lua and modern configurations).
+- **Colorscheme**: **[catppuccin](https://github.com/catppuccin/nvim)** on `flavour = "auto"`, loaded with `priority = 1000` so its highlight groups are ready before any other plugin draws. It follows `vim.o.background` through the `background` table in `lua/plugins/catppuccin.lua` — **Latte** when the terminal is light, **Frappé** when it is dark, matching the Ghostty theme. Note that setting `flavour` to a fixed value would bypass that table.
+- **Statusline**: **[lualine](https://github.com/nvim-lualine/lualine.nvim)** is left on `theme = "auto"`. Catppuccin sets `g:colors_name` to the resolved flavour (e.g. `catppuccin-frappe`) and ships a matching lualine theme under that exact name, so `auto` picks up the real palette and follows the light/dark switch on its own.
 
 ### Key Plugins
 1. **[Telescope](https://github.com/nvim-telescope/telescope.nvim)**: A highly extendable fuzzy finder over lists (files, words, recent files) with `fzf-native` and `ui-select` integration for a slick UI.
