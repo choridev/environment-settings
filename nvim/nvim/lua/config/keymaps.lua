@@ -10,14 +10,18 @@ mapKey("<leader>fb", ":Telescope buffers<cr>")
 mapKey("<leader>fh", ":Telescope help_tags<cr>")
 
 -- nvim-lspconfig
+-- Bound to 'grr', not 'gr': Neovim already ships 'grn', 'gra', 'grr' and 'gri',
+-- so a bare 'gr' stalls for 'timeoutlen' while waiting for the next key.
 mapKey("K", vim.lsp.buf.hover)
 mapKey("gd", vim.lsp.buf.definition)
-mapKey("gr", require("telescope.builtin").lsp_references)
+mapKey("grr", function()
+	require("telescope.builtin").lsp_references()
+end)
 mapKey("<leader>ca", vim.lsp.buf.code_action)
 
 -- Pane navigation
 mapKey("<C-h>", "<C-w>h") -- Left
-mapKey("<C-j>", "<C-w>j") -- Deft
+mapKey("<C-j>", "<C-w>j") -- Down
 mapKey("<C-k>", "<C-w>k") -- Up
 mapKey("<C-l>", "<C-w>l") -- Right
 
