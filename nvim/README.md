@@ -5,6 +5,7 @@ A modern, blazing-fast, and modular Neovim configuration written entirely in Lua
 ## ⚠️ Requirements
 - **Neovim 0.12.0+** (Required by `nvim-treesitter` main branch)
 - **Git**, **curl**, and **npm** (Required by Mason for installing language servers)
+- **make** and a **C compiler** (Required to build `telescope-fzf-native`)
 - A **Nerd Font** (Optional but highly recommended for UI icons and `alpha-nvim` dashboard)
 
 ## 🚀 Installation (Automated)
@@ -49,8 +50,33 @@ chmod +x install.sh
 
 ## ⌨️ Key Mappings
 
+> [!NOTE]
+> The leader key is **Space**. Everything written as `<leader>x` below means pressing `Space` then `x`.
+
+### File Explorer & Fuzzy Finding
+- `<leader>e`: Toggle the Neo-tree file explorer.
+- `<leader>ff`: Find files.
+- `<leader>fg`: Live grep across the project.
+- `<leader>fb`: List open buffers.
+- `<leader>fh`: Search the help tags.
+
+### LSP
+- `K`: Show hover documentation for the symbol under the cursor.
+- `gd`: Jump to definition.
+- `grr`: List references in a Telescope picker.
+- `<leader>ca`: Open the code-action menu.
+
+Neovim's own LSP defaults remain available alongside these — `grn` to rename, `gra` for code actions, and `gri` for implementations. `grr` is deliberately bound on top of the built-in so that references open in Telescope instead of the quickfix list; binding a bare `gr` would instead stall every one of these for `timeoutlen`.
+
+### Window Navigation
+- `Ctrl + h` / `Ctrl + j` / `Ctrl + k` / `Ctrl + l`: Move to the window on the left / below / above / right.
+
+### Editing
+- `<leader>h`: Clear the search highlight.
+- `<` / `>` (visual mode): Shift the selection left/right while keeping it selected.
+
 ### General Navigation
-- `Ctrl + 6` (`<C-^>`): Instantly jump back and forth between the two most recently used buffers (Alternate Buffer).
+- `Ctrl + 6` (`<C-^>`): Instantly jump back and forth between the two most recently used buffers (Alternate Buffer). This is a Neovim built-in, not a mapping from this config.
 
 ### Dashboard (alpha-nvim)
 When launching Neovim without opening a file, the startup menu provides these quick keys:
