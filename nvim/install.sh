@@ -2,8 +2,9 @@
 
 echo "🚀 Starting Neovim environment auto-setup..."
 
-# 0. Check dependencies (nvim and git)
-for cmd in nvim git; do
+# 0. Check dependencies
+# git: cloning plugins | curl, npm: Mason language servers | make, cc: telescope-fzf-native
+for cmd in nvim git curl npm make cc; do
     if ! command -v $cmd &> /dev/null; then
         echo "❌ Error: '$cmd' is not installed. Please install $cmd first."
         exit 1
