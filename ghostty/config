@@ -1,0 +1,7 @@
+theme = dark:Catppuccin Frappe,light:Catppuccin Latte
+font-family = D2CodingLigature Nerd Font Mono
+
+term = xterm-256color
+
+keybind = ctrl+i=text:\x09
+keybind = ctrl+m=text:\x0d
