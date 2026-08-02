@@ -35,7 +35,7 @@ chmod +x install.sh
 ### Core Architecture
 - **Plugin Manager**: Powered by **[lazy.nvim](https://github.com/folke/lazy.nvim)** for lazy-loading and incredibly fast startup times.
 - **Language**: 100% Lua configuration for better performance and maintainability.
-- **Indentation**: Standardized to 2 spaces (the global standard for Lua and modern configurations).
+- **Indentation**: Width 4. `options.lua` sets `expandtab`, so freshly typed indentation is spaces, while committed Lua files are tab-indented because `stylua` (run through `conform.nvim`) formats on save and no `.stylua.toml` overrides its defaults.
 - **Colorscheme**: **[catppuccin](https://github.com/catppuccin/nvim)** on `flavour = "auto"`, loaded with `priority = 1000` so its highlight groups are ready before any other plugin draws. It follows `vim.o.background` through the `background` table in `lua/plugins/catppuccin.lua` — **Latte** when the terminal is light, **Frappé** when it is dark, matching the Ghostty theme. Note that setting `flavour` to a fixed value would bypass that table.
 - **Statusline**: **[lualine](https://github.com/nvim-lualine/lualine.nvim)** is left on `theme = "auto"`. Catppuccin sets `g:colors_name` to the resolved flavour (e.g. `catppuccin-frappe`) and ships a matching lualine theme under that exact name, so `auto` picks up the real palette and follows the light/dark switch on its own.
 
