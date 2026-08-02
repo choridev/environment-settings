@@ -7,6 +7,6 @@ return {
 			"MunifTanjim/nui.nvim",
 			"nvim-tree/nvim-web-devicons", -- optional, but recommended
 		},
-		lazy = false, -- neo-tree will lazily load itself
+		cmd = "Neotree", -- the only entry point is `<leader>e` -> `:Neotree toggle`
 	},
 }
