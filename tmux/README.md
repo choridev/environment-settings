@@ -37,7 +37,7 @@ chmod +x install.sh
 
 ### Prefix Bindings
 
-Press the prefix (`Ctrl + b`) first, then:
+The prefix is remapped from the Tmux default `Ctrl + b` to **`Ctrl + t`**. Press it first, then:
 
 - `v`: Enter copy mode.
 - `[` / `]`: Move to the previous / next pane (repeatable — keep pressing the key without re-entering the prefix).
@@ -47,11 +47,14 @@ Press the prefix (`Ctrl + b`) first, then:
 Both splits open the new pane in the same directory as the current one, so `\` and `-` are drop-in replacements for the defaults `%` and `"`.
 
 > [!IMPORTANT]
-> `[` and `]` override the Tmux defaults for that prefix. `Ctrl + b` `[` no longer enters copy mode — use `Ctrl + b` `v` instead — and `Ctrl + b` `]` no longer pastes the buffer. Use `Ctrl + b` `=` to pick a buffer to paste from.
+> `[` and `]` override the Tmux defaults for that prefix. `Ctrl + t` `[` no longer enters copy mode — use `Ctrl + t` `v` instead — and `Ctrl + t` `]` no longer pastes the buffer. Use `Ctrl + t` `=` to pick a buffer to paste from.
+
+> [!NOTE]
+> Taking over `Ctrl + t` costs you the shell's `transpose-chars` binding, since Tmux swallows the key first. Press `Ctrl + t` twice to send a literal one through to the program running in the pane.
 
 ### Copy Mode
 
-When you enter copy mode (by scrolling up with your mouse, or pressing `Ctrl + b` followed by `v`), you can use the following Vim-like bindings:
+When you enter copy mode (by scrolling up with your mouse, or pressing `Ctrl + t` followed by `v`), you can use the following Vim-like bindings:
 
 - `v`: Begin text selection (Visual mode).
 - `Ctrl + v` (`<C-v>`): Toggle rectangle (block) selection.
