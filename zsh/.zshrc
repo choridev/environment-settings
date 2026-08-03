@@ -10,7 +10,13 @@ if [[ -o interactive ]] && [[ -n "$SSH_TTY" ]] && [[ -z "$TMUX" ]] && command -v
 fi
 
 # Color
-eval "$(dircolors -b)"
+# `dircolors` only ships with GNU coreutils, so its presence stands in for the
+# whole GNU-vs-BSD userland split (macOS lands in the else branch).
+if command -v dircolors >/dev/null 2>&1; then
+    eval "$(dircolors -b)"
+else
+    export CLICOLOR=1
+fi
 
 # Completion
 autoload -Uz compinit && compinit
@@ -45,12 +51,18 @@ bindkey -e
 WORDCHARS=''
 
 # Alias
-alias ls='ls --color=auto'
+# `--color=auto` and `-I` are GNU-only; BSD ls colours via CLICOLOR and has no -I.
+if command -v dircolors >/dev/null 2>&1; then
+    alias ls='ls --color=auto'
+    alias rm='rm -I'      # prompt once before removing three or more files
+else
+    alias ls='ls -G'
+    alias rm='rm -i'      # BSD has no -I, so fall back to prompting every time
+fi
 alias l='ls -F'
 alias ll='ls -alFh'
 alias grep='grep --color=auto'
-alias diff='diff --color'
-alias rm='rm -I'
+diff --color /dev/null /dev/null >/dev/null 2>&1 && alias diff='diff --color'
 alias vi='nvim'
 alias tm='tmux'
 alias sa='ssha'
@@ -82,3 +94,8 @@ do
   [[ -r "$_p" ]] && source "$_p"
 done
 unset _p
+
+# Machine-local settings
+# Secrets and per-machine paths belong in ~/.zshrc.local, which is never
+# committed. Loaded last so it can override anything set above.
+[[ -r ~/.zshrc.local ]] && source ~/.zshrc.local

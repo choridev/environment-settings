@@ -32,7 +32,18 @@ chmod +x install.sh
 ```
 
 > [!NOTE]
-> The script is **idempotent and safe**. It checks for dependencies, safely backs up any existing `~/.zshrc`, clones the two Zsh plugins into `~/.zsh/`, installs Starship only when it is missing, creates **symbolic links** (`~/.zshrc`, `~/.zsh/ssh-helper.zsh`, `~/.config/starship.toml`) for real-time synchronization, and finishes with a `zsh -n` syntax check.
+> The script is **idempotent and safe**. It checks for dependencies, safely backs up any existing `~/.zshrc`, clones the three Zsh plugins into `~/.zsh/`, installs Starship only when it is missing, creates **symbolic links** (`~/.zshrc`, `~/.zsh/ssh-helper.zsh`, `~/.config/starship.toml`) for real-time synchronization, writes a `~/.zshrc.local` stub if you do not have one, and finishes with a `zsh -n` syntax check.
+
+### Machine-local settings
+
+Keep API tokens, per-machine paths, and any work-specific aliases in `~/.zshrc.local`. It is created by the installer with mode `600`, is sourced last so it can override anything above it, and is never committed.
+
+```shell
+# ~/.zshrc.local
+export SOME_API_TOKEN="..."
+export SOME_REPO="$HOME/path/to/repo"
+alias sr='cd "$SOME_REPO"'
+```
 
 If Zsh is not your login shell yet, switch to it once the script has finished:
 ```shell
@@ -47,6 +58,7 @@ chsh -s "$(command -v zsh)"
 - **History**: 100,000 entries, appended immediately so parallel shells do not clobber each other. Commands typed with a leading space are not recorded.
 - **Plugins**: **[fzf-tab](https://github.com/Aloxaf/fzf-tab)**, **[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)** and **[zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)**. Every plugin is sourced through a guard, so a missing file degrades the shell gracefully instead of erroring on every startup.
 - **Node**: `nvm` is loaded when `~/.nvm` is present. Note that sourcing `nvm.sh` dominates shell startup time.
+- **Portability**: The colour and `rm` aliases branch on whether GNU coreutils is present, so macOS gets `ls -G` with `CLICOLOR` and `rm -i` instead of the GNU-only `ls --color=auto` and `rm -I`. `diff --color` is enabled only if the installed `diff` accepts it.
 
 ## 🔎 Completion
 

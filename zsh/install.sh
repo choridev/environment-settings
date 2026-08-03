@@ -12,7 +12,7 @@ for cmd in zsh git curl fzf; do
 done
 
 # 1. Check for the template files (Fail-fast mechanism)
-echo "🔍 1/6: Checking for template files..."
+echo "🔍 1/7: Checking for template files..."
 DOTFILES_DIR=$(pwd)
 for f in .zshrc ssh-helper.zsh starship.toml; do
     if [ ! -f "$DOTFILES_DIR/$f" ]; then
@@ -23,7 +23,7 @@ done
 echo "✅ Templates found at $DOTFILES_DIR"
 
 # 2. Backup existing configuration safely (Symlink aware)
-echo "💾 2/6: Checking for an existing .zshrc..."
+echo "💾 2/7: Checking for an existing .zshrc..."
 if [ -f ~/.zshrc ] || [ -h ~/.zshrc ]; then
     if [ "$(readlink ~/.zshrc)" = "$DOTFILES_DIR/.zshrc" ]; then
         echo "✅ ~/.zshrc is already correctly symlinked. Skipping backup."
@@ -37,7 +37,7 @@ else
 fi
 
 # 3. Install Zsh plugins
-echo "📦 3/6: Installing Zsh plugins..."
+echo "📦 3/7: Installing Zsh plugins..."
 mkdir -p ~/.zsh
 install_plugin() {
     local name="$1" url="$2"
@@ -53,7 +53,7 @@ install_plugin zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggesti
 install_plugin zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting
 
 # 4. Install Starship prompt
-echo "🌟 4/6: Installing Starship prompt..."
+echo "🌟 4/7: Installing Starship prompt..."
 if command -v starship &> /dev/null; then
     echo "💡 Starship is already installed ($(starship --version | head -1)). Skipping."
 else
@@ -62,7 +62,7 @@ else
 fi
 
 # 5. Create symbolic links
-echo "🔗 5/6: Creating symbolic links..."
+echo "🔗 5/7: Creating symbolic links..."
 mkdir -p ~/.config
 ln -sfn "$DOTFILES_DIR/.zshrc" ~/.zshrc
 ln -sfn "$DOTFILES_DIR/ssh-helper.zsh" ~/.zsh/ssh-helper.zsh
@@ -72,8 +72,25 @@ echo "   ~/.zshrc               -> $DOTFILES_DIR/.zshrc"
 echo "   ~/.zsh/ssh-helper.zsh  -> $DOTFILES_DIR/ssh-helper.zsh"
 echo "   ~/.config/starship.toml -> $DOTFILES_DIR/starship.toml"
 
-# 6. Verify the configuration parses
-echo "🧪 6/6: Verifying the configuration..."
+# 6. Local Config Setup (.zshrc.local)
+echo "🔐 6/7: Setting up machine-local settings..."
+if [ -f ~/.zshrc.local ]; then
+    echo "✅ ~/.zshrc.local already exists. Skipping to preserve your secrets."
+else
+    (umask 077; cat <<'EOF' > ~/.zshrc.local
+# Machine-local zsh settings. NEVER commit this file.
+# Put API tokens, per-machine paths, and anything else private in here.
+
+# export SOME_API_TOKEN="..."
+# export SOME_REPO="$HOME/path/to/repo"
+# alias sr='cd "$SOME_REPO"'
+EOF
+)
+    echo "✅ ~/.zshrc.local created (mode 600). Fill in your secrets there."
+fi
+
+# 7. Verify the configuration parses
+echo "🧪 7/7: Verifying the configuration..."
 if zsh -n "$DOTFILES_DIR/.zshrc" && zsh -n "$DOTFILES_DIR/ssh-helper.zsh"; then
     echo "✅ Syntax check passed!"
 else
