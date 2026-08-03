@@ -48,6 +48,7 @@ install_plugin() {
         echo "💡 $name is already installed. Skipping clone."
     fi
 }
+install_plugin fzf-tab https://github.com/Aloxaf/fzf-tab
 install_plugin zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions
 install_plugin zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting
 

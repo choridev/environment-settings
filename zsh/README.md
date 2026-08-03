@@ -43,10 +43,30 @@ chsh -s "$(command -v zsh)"
 
 ### Shell
 - **Prompt**: **[Starship](https://starship.rs)**, configured in `starship.toml` — the hostname appears only over SSH, and the prompt shows the git branch, a compact git status, the UTC time, and how long the last command took.
-- **Completion**: `compinit` with a menu selector and case-insensitive, partial-word matching.
+- **Completion**: `compinit` with substring matching and an fzf picker on Tab — see [Completion](#-completion) below.
 - **History**: 100,000 entries, appended immediately so parallel shells do not clobber each other. Commands typed with a leading space are not recorded.
-- **Plugins**: **[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)** and **[zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)**. Every plugin is sourced through a guard, so a missing file degrades the shell gracefully instead of erroring on every startup.
+- **Plugins**: **[fzf-tab](https://github.com/Aloxaf/fzf-tab)**, **[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)** and **[zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)**. Every plugin is sourced through a guard, so a missing file degrades the shell gracefully instead of erroring on every startup.
 - **Node**: `nvm` is loaded when `~/.nvm` is present. Note that sourcing `nvm.sh` dominates shell startup time.
+
+## 🔎 Completion
+
+Tab opens an **[fzf-tab](https://github.com/Aloxaf/fzf-tab)** picker over the candidates, and the candidates themselves are matched by **substring**, not by prefix. Typing part of a name from anywhere inside it is enough:
+
+```shell
+cd tron<Tab>                        # offers tron/, neutron/ and electron/
+git switch osmosis<Tab>             # offers every branch containing "osmosis"
+git switch argocd/k8s/osmo<Tab>     # fuzzy fallback still finds ...-osmosis-...
+```
+
+Matching is case-insensitive, so `OSMOSIS` finds the same branches as `osmosis`. Once the picker is open, keep typing to narrow it down with fzf's own fuzzy search.
+
+Three settings have to agree for this to work, and dropping any one of them quietly breaks it:
+
+- `matcher-list` puts substring matching **first**. A prefix matcher ahead of it would win outright — `tron` would resolve to `tron/` and `neutron/` would never be offered, because Zsh stops at the first matcher that produces a match.
+- `menu yes` and `setopt menu_complete` keep Zsh from inserting the longest common prefix and calling it done. Without them `git switch osmosis` collapses to `argocd/`, throwing away the very text that was filtering the list.
+- fzf-tab is sourced **before** zsh-autosuggestions and zsh-syntax-highlighting, since those wrap the same widget.
+
+The trailing `r:|?=**` matcher is a fuzzy fallback that only runs when nothing else matched. It matches non-contiguously, so a query like `osmo` also pulls in `cosmos` — the picker is there to choose between them.
 
 ### Automatic tmux
 When the session is interactive, arrives over SSH, and is not already inside tmux, the shell attaches to a session named `main` (creating it if needed) with the window named after the short hostname. Local shells are left alone.

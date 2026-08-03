@@ -14,13 +14,18 @@ eval "$(dircolors -b)"
 
 # Completion
 autoload -Uz compinit && compinit
-zstyle ':completion:*' menu select
+# 'menu yes' + menu_complete keeps fzf-tab from being skipped when the matches
+# share a common prefix: without them Zsh inserts the prefix and never opens fzf.
+zstyle ':completion:*' menu yes
+# Substring matching comes first so that 'tron' still offers 'neutron'; a prefix
+# matcher here would win outright and hide every non-prefix match. The trailing
+# entry is a fuzzy fallback for queries like 'argocd/k8s/osmo'.
 zstyle ':completion:*' matcher-list \
-  'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
-  'r:|=*' \
-  'l:|=* r:|=*'
+  'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' \
+  'r:|?=**'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 setopt complete_in_word
+setopt menu_complete
 
 # nvm
 export NVM_DIR="$HOME/.nvm"
@@ -66,8 +71,11 @@ fi
 command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 
 # Plugin
+# fzf-tab has to come before the plugins that wrap widgets (autosuggestions,
+# syntax-highlighting), otherwise it cannot take over the completion widget.
 for _p in \
   ~/.zsh/ssh-helper.zsh \
+  ~/.zsh/fzf-tab/fzf-tab.plugin.zsh \
   ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh \
   ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 do
