@@ -50,6 +50,16 @@ unsetopt flowcontrol
 bindkey -e
 WORDCHARS=''
 
+# Up/Down search history for entries starting with whatever is already typed.
+# Both sequences are bound because terminals switch between normal and
+# application cursor mode, and binding only one makes this fail intermittently.
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+for _k in '^[[A' '^[OA'; do bindkey "$_k" up-line-or-beginning-search; done
+for _k in '^[[B' '^[OB'; do bindkey "$_k" down-line-or-beginning-search; done
+unset _k
+
 # Alias
 # `--color=auto` and `-I` are GNU-only; BSD ls colours via CLICOLOR and has no -I.
 if command -v dircolors >/dev/null 2>&1; then

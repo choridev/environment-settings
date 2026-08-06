@@ -55,7 +55,7 @@ chsh -s "$(command -v zsh)"
 ### Shell
 - **Prompt**: **[Starship](https://starship.rs)**, configured in `starship.toml` — the hostname appears only over SSH, and the prompt shows the git branch, a compact git status, the UTC time, and how long the last command took.
 - **Completion**: `compinit` with substring matching and an fzf picker on Tab — see [Completion](#-completion) below.
-- **History**: 100,000 entries, appended immediately so parallel shells do not clobber each other. Commands typed with a leading space are not recorded.
+- **History**: 100,000 entries, appended immediately so parallel shells do not clobber each other. Commands typed with a leading space are not recorded. **Up** and **Down** search for history entries that start with whatever is already on the line, so typing `ansi` and pressing Up walks through past `ansible-playbook …` commands instead of the last thing you ran. On an empty line they behave like plain history navigation, and inside a multi-line command they move between its lines first.
 - **Plugins**: **[fzf-tab](https://github.com/Aloxaf/fzf-tab)**, **[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)** and **[zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)**. Every plugin is sourced through a guard, so a missing file degrades the shell gracefully instead of erroring on every startup.
 - **Node**: `nvm` is loaded when `~/.nvm` is present. Note that sourcing `nvm.sh` dominates shell startup time.
 - **Portability**: The colour and `rm` aliases branch on whether GNU coreutils is present, so macOS gets `ls -G` with `CLICOLOR` and `rm -i` instead of the GNU-only `ls --color=auto` and `rm -I`. `diff --color` is enabled only if the installed `diff` accepts it.
