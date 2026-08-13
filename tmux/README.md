@@ -30,6 +30,7 @@ chmod +x install.sh
 - **Mouse Support**: Fully enabled (`mouse on`). You can resize panes, switch windows, and scroll through history using your mouse or trackpad.
 - **System Clipboard Integration**: Uses OSC 52 to synchronize copied text inside Tmux directly to your local OS clipboard (`set-clipboard on`).
 - **Vim-style Copy Mode**: Navigate and copy text in Tmux just like you do in Vim.
+- **Synchronised Input**: Type the same command into every pane of a window at once (`Ctrl + t` `i`), with a red **SYNC** flag in the status bar while it is active.
 - **No Clipboard Plugin Required**: [tmux-yank](https://github.com/tmux-plugins/tmux-yank) is listed but commented out — it depends on a local clipboard tool (`pbcopy`, `xclip`, ...) and is useless on a headless server. OSC 52 covers the same job over SSH. Uncomment it if you run Tmux on a machine with a real clipboard.
 - **True Color & SSH Fallbacks**: The configuration includes neatly organized, commented-out settings for 256/True Color overrides and manual OSC 52 escape sequences. Easily uncomment them if you experience color degradation or clipboard syncing issues over specific SSH environments.
 
@@ -43,11 +44,17 @@ The prefix is remapped from the Tmux default `Ctrl + b` to **`Ctrl + t`**. Press
 - `[` / `]`: Move to the previous / next pane (repeatable — keep pressing the key without re-entering the prefix).
 - `\`: Split into two panes side by side (a vertical divider), keeping the current directory.
 - `-`: Split into two panes stacked top and bottom (a horizontal divider), keeping the current directory.
+- `i`: Toggle synchronised input — whatever you type goes to every pane in the window at once. Press it again to stop.
 
 Both splits open the new pane in the same directory as the current one, so `\` and `-` are drop-in replacements for the defaults `%` and `"`.
 
+While synchronised input is on, a red **SYNC** flag sits at the right end of the status bar, and Tmux paints the active pane border red of its own accord. Look for either before typing anything you would not want to run in every pane at once.
+
 > [!IMPORTANT]
 > `[` and `]` override the Tmux defaults for that prefix. `Ctrl + t` `[` no longer enters copy mode — use `Ctrl + t` `v` instead — and `Ctrl + t` `]` no longer pastes the buffer. Use `Ctrl + t` `=` to pick a buffer to paste from.
+
+> [!IMPORTANT]
+> `i` also takes over a default: `Ctrl + t` `i` no longer shows the window information message. Run it through the command prompt (`Ctrl + t` `:` then `display-message`) on the rare occasion you want it.
 
 > [!NOTE]
 > Taking over `Ctrl + t` costs you the shell's `transpose-chars` binding, since Tmux swallows the key first. Press `Ctrl + t` twice to send a literal one through to the program running in the pane.
