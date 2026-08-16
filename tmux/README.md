@@ -50,6 +50,11 @@ Both splits open the new pane in the same directory as the current one, so `\` a
 
 Tmux splits the current pane in half and nothing else, so a third `\` would normally leave the row at 50/25/25. Both bindings run `select-layout -E` right after the split to even the panes back out — columns for `\`, rows for `-`. It only touches the panes sitting directly next to the new one, so the rest of the window keeps its shape: split a column off with `\`, then press `-` inside it, and the neighbouring columns stay exactly as wide as they were. That is why the bindings do not use the `even-horizontal` / `even-vertical` layouts, which flatten the whole window into one row or one column. Resize by hand afterwards if you want uneven panes; the next split in that direction will even them out again.
 
+Closing a pane evens things out too. Tmux normally gives the whole of a closed pane's space to one neighbour, so a hook re-spreads the survivors — whether the pane ended on its own (`exit`, `Ctrl + D`) or you killed it with `Ctrl + t` `x`. Both are covered, because Tmux signals them through different hooks (`pane-exited` and `after-kill-pane`) and neither fires for the other.
+
+> [!NOTE]
+> Closing the **last** pane of a window closes the window itself, and the window you land on gets evened out as a side effect. Tmux does not tell the hook which window the pane belonged to, so there is no way to tell that case apart. It only matters if you had hand-resized the panes in the window you land on.
+
 Tmux hands the leftover rows or columns that do not divide evenly to the last pane, so with four panes in a 62-row terminal you get 14/14/14/17 rather than a perfect quarter each. That is Tmux's own layout arithmetic — `even-vertical` produces exactly the same numbers — and it is most noticeable when stacking panes with `-` in a short terminal.
 
 While synchronised input is on, a red **SYNC** flag sits at the right end of the status bar, and Tmux paints the active pane border red of its own accord. Look for either before typing anything you would not want to run in every pane at once.
