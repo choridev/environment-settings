@@ -42,20 +42,20 @@ The prefix is remapped from the Tmux default `Ctrl + b` to **`Ctrl + t`**. Press
 
 - `v`: Enter copy mode.
 - `[` / `]`: Move to the previous / next pane (repeatable — keep pressing the key without re-entering the prefix).
-- `\`: Split into two panes side by side (a vertical divider), keeping the current directory. Every pane in the row is re-spread to an equal width afterwards.
-- `-`: Split into two panes stacked top and bottom (a horizontal divider), keeping the current directory. Every pane in the column is re-spread to an equal height afterwards.
+- `\`: Split into two panes side by side (a vertical divider), keeping the current directory. The row is re-evened afterwards.
+- `-`: Split into two panes stacked top and bottom (a horizontal divider), keeping the current directory. The column is re-evened afterwards.
 - `i`: Toggle synchronised input — whatever you type goes to every pane in the window at once. Press it again to stop.
 
 Both splits open the new pane in the same directory as the current one, so `\` and `-` are drop-in replacements for the defaults `%` and `"`.
 
-Tmux splits the current pane in half and nothing else, so a third `\` would normally leave the row at 50/25/25. Both bindings run `select-layout -E` right after the split to even the panes back out — columns for `\`, rows for `-`. It only touches the panes sitting directly next to the new one, so the rest of the window keeps its shape: split a column off with `\`, then press `-` inside it, and the neighbouring columns stay exactly as wide as they were. That is why the bindings do not use the `even-horizontal` / `even-vertical` layouts, which flatten the whole window into one row or one column. Resize by hand afterwards if you want uneven panes; the next split in that direction will even them out again.
+Tmux halves only the current pane, so a third `\` would leave the row at 50/25/25. Both bindings run `select-layout -E` afterwards, which re-evens just the panes next to the new one — the rest of the window keeps its shape. The `even-horizontal` / `even-vertical` layouts would instead flatten everything into one row or column. Resize by hand if you want uneven panes; the next split in that direction evens them again.
 
-Closing a pane evens things out too. Tmux normally gives the whole of a closed pane's space to one neighbour, so a hook re-spreads the survivors — whether the pane ended on its own (`exit`, `Ctrl + D`) or you killed it with `Ctrl + t` `x`. Both are covered, because Tmux signals them through different hooks (`pane-exited` and `after-kill-pane`) and neither fires for the other.
+Closing a pane re-evens the survivors too, whether it ended on its own (`exit`, `Ctrl + D`) or you killed it with `Ctrl + t` `x` — Tmux reports those through different hooks, so both are hooked.
+
+Leftover rows or columns that do not divide evenly all go to the last pane: four panes in a 62-row terminal give 14/14/14/17. That is Tmux's own arithmetic, and `even-vertical` produces the same numbers.
 
 > [!NOTE]
-> Closing the **last** pane of a window closes the window itself, and the window you land on gets evened out as a side effect. Tmux does not tell the hook which window the pane belonged to, so there is no way to tell that case apart. It only matters if you had hand-resized the panes in the window you land on.
-
-Tmux hands the leftover rows or columns that do not divide evenly to the last pane, so with four panes in a 62-row terminal you get 14/14/14/17 rather than a perfect quarter each. That is Tmux's own layout arithmetic — `even-vertical` produces exactly the same numbers — and it is most noticeable when stacking panes with `-` in a short terminal.
+> Closing the **last** pane of a window closes the window, and the window you land on gets evened as a side effect — Tmux does not tell the hook which window the pane came from. Only noticeable if you had hand-resized that window.
 
 While synchronised input is on, a red **SYNC** flag sits at the right end of the status bar, and Tmux paints the active pane border red of its own accord. Look for either before typing anything you would not want to run in every pane at once.
 
