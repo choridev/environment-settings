@@ -58,7 +58,7 @@ Leftover rows or columns that do not divide evenly all go to the last pane: four
 > [!NOTE]
 > Closing the **last** pane of a window closes the window, and the window you land on gets evened as a side effect — Tmux does not tell the hook which window the pane came from. Only noticeable if you had hand-resized that window.
 
-Unfocused panes are greyed out through `window-style` / `window-active-style`. Both are palette entries — `brightblack` and `terminal` — so they follow the terminal's own light/dark theme instead of pinning a colour. Synchronised input overrides the dimming for that window, since every pane is live while it is on.
+Unfocused panes are greyed out through `window-style` / `window-active-style`. The focused pane uses `terminal`, the terminal's own foreground, so it follows the theme. The unfocused grey is a fixed `colour245` instead: dimming moves away from white on a dark background and away from black on a light one, and Tmux 3.4 cannot tell which theme is in use, so a mid grey is the single value that reads on both. Nudge it lighter (`colour250`) or darker (`colour240`) to taste. Pane borders are drawn `heavy` so the focused pane is also marked by border weight and colour, neither of which depends on the theme. Synchronised input overrides the dimming for that window, since every pane is live while it is on.
 
 > [!NOTE]
 > Only text left at the default colour dims. Anything a program colours itself — a shell prompt, syntax highlighting, `ls` output — keeps its own colour in an unfocused pane. The pane border and the cursor still mark the focused pane.
