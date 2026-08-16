@@ -42,11 +42,15 @@ The prefix is remapped from the Tmux default `Ctrl + b` to **`Ctrl + t`**. Press
 
 - `v`: Enter copy mode.
 - `[` / `]`: Move to the previous / next pane (repeatable — keep pressing the key without re-entering the prefix).
-- `\`: Split into two panes side by side (a vertical divider), keeping the current directory.
-- `-`: Split into two panes stacked top and bottom (a horizontal divider), keeping the current directory.
+- `\`: Split into two panes side by side (a vertical divider), keeping the current directory. Every pane in the row is re-spread to an equal width afterwards.
+- `-`: Split into two panes stacked top and bottom (a horizontal divider), keeping the current directory. Every pane in the column is re-spread to an equal height afterwards.
 - `i`: Toggle synchronised input — whatever you type goes to every pane in the window at once. Press it again to stop.
 
 Both splits open the new pane in the same directory as the current one, so `\` and `-` are drop-in replacements for the defaults `%` and `"`.
+
+Tmux splits the current pane in half and nothing else, so a third `\` would normally leave the row at 50/25/25. Both bindings run `select-layout -E` right after the split to even the panes back out — columns for `\`, rows for `-`. It only touches the panes sitting directly next to the new one, so the rest of the window keeps its shape: split a column off with `\`, then press `-` inside it, and the neighbouring columns stay exactly as wide as they were. That is why the bindings do not use the `even-horizontal` / `even-vertical` layouts, which flatten the whole window into one row or one column. Resize by hand afterwards if you want uneven panes; the next split in that direction will even them out again.
+
+Tmux hands the leftover rows or columns that do not divide evenly to the last pane, so with four panes in a 62-row terminal you get 14/14/14/17 rather than a perfect quarter each. That is Tmux's own layout arithmetic — `even-vertical` produces exactly the same numbers — and it is most noticeable when stacking panes with `-` in a short terminal.
 
 While synchronised input is on, a red **SYNC** flag sits at the right end of the status bar, and Tmux paints the active pane border red of its own accord. Look for either before typing anything you would not want to run in every pane at once.
 
