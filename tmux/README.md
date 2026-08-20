@@ -28,6 +28,7 @@ chmod +x install.sh
 ## ✨ Features & Plugins
 
 - **Mouse Support**: Fully enabled (`mouse on`). You can resize panes, switch windows, and scroll through history using your mouse or trackpad.
+- **Large Scrollback Buffer**: Keeps 50,000 lines of history per pane (`history-limit 50000`), so long-running sessions and verbose command output stay scrollable.
 - **System Clipboard Integration**: Uses OSC 52 to synchronize copied text inside Tmux directly to your local OS clipboard (`set-clipboard on`).
 - **Vim-style Copy Mode**: Navigate and copy text in Tmux just like you do in Vim.
 - **Dimmed Unfocused Panes**: Every pane but the focused one is greyed out, so the cursor is easy to find in a busy window. The dimming lifts while synchronised input is on and comes back when it is switched off.
