@@ -1,6 +1,10 @@
 theme = dark:Catppuccin Frappe,light:Catppuccin Latte
 font-family = D2CodingLigature Nerd Font Mono
 
+shell-integration-features = no-cursor
+cursor-style = block
+custom-shader = shaders/cursor_sweep.glsl
+
 term = xterm-256color
 
 keybind = ctrl+key_i=text:\x09
