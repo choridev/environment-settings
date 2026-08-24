@@ -304,9 +304,12 @@ _pick_host() {
     )
 
     local use_expect=0
-    if [[ -n "$TMUX" ]]; then
+    if [[ -n "$TMUX" || -n "$ZELLIJ" ]]; then
+      # Zellij calls it a tab, Tmux a window; the key is the same either way.
+      local hdr=$'\033[2mENTER:connect | ctrl-s:split ─ | ctrl-o:split │ | ctrl-n:new window\033[0m'
+      [[ -n "$ZELLIJ" ]] && hdr=$'\033[2mENTER:connect | ctrl-s:split ─ | ctrl-o:split │ | ctrl-n:new tab\033[0m'
       fzf_opts+=(
-        --header=$'\033[2mENTER:connect | ctrl-s:split ─ | ctrl-o:split │ | ctrl-n:new window\033[0m'
+        --header="$hdr"
         --expect='ctrl-s,ctrl-o,ctrl-n'
       )
       use_expect=1
@@ -352,23 +355,42 @@ _ssha_connect() {
   local key="$1" host="$2"
   shift 2
 
+  # Zellij is checked first so that a Zellij session running inside Tmux —
+  # which happens on a machine reached before the .zshrc guard was in place —
+  # splits the pane you are actually looking at.
+  #
+  # The Zellij calls pass argv straight through after '--'. The Tmux ones build
+  # a string that a shell re-splits, so a host or argument containing a space
+  # survives on the Zellij path and not on the Tmux one.
   case "$key" in
     ctrl-s)
-      if [[ -n "$TMUX" ]]; then
+      if [[ -n "$ZELLIJ" ]]; then
+        echo "-> zellij pane below: ssh $host $*"
+        zellij action new-pane -d down -- ssh "$host" "$@"
+        return
+      elif [[ -n "$TMUX" ]]; then
         echo "-> tmux split horizontal: ssh $host $*"
         tmux split-window "ssh $host $*"
         return
       fi
       ;;
     ctrl-o)
-      if [[ -n "$TMUX" ]]; then
+      if [[ -n "$ZELLIJ" ]]; then
+        echo "-> zellij pane right: ssh $host $*"
+        zellij action new-pane -d right -- ssh "$host" "$@"
+        return
+      elif [[ -n "$TMUX" ]]; then
         echo "-> tmux split vertical: ssh $host $*"
         tmux split-window -h "ssh $host $*"
         return
       fi
       ;;
     ctrl-n)
-      if [[ -n "$TMUX" ]]; then
+      if [[ -n "$ZELLIJ" ]]; then
+        echo "-> zellij tab: ssh $host $*"
+        zellij action new-tab -n "$host" -- ssh "$host" "$@"
+        return
+      elif [[ -n "$TMUX" ]]; then
         echo "-> tmux window: ssh $host $*"
         tmux new-window -n "$host" "ssh $host $*"
         return

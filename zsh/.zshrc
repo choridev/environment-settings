@@ -4,9 +4,21 @@ path=("$HOME/.local/bin" $path /usr/local/go/bin /usr/local/nvim/bin)
 export EDITOR=nvim VISUAL=nvim
 export LESS='-R -F'
 
-# tmux
-if [[ -o interactive ]] && [[ -n "$SSH_TTY" ]] && [[ -z "$TMUX" ]] && command -v tmux >/dev/null 2>&1; then
-    tmux new-session -A -s main -n "$(hostname -s)"
+# Multiplexer: Zellij where it exists, Tmux on machines without it.
+#
+# Both variables have to be clear, not just one. Each multiplexer sets only its
+# own, so testing $TMUX alone would start Zellij inside every Tmux pane, and
+# testing $ZELLIJ alone would do the reverse.
+#
+# Zellij has no equivalent of Tmux's -n for naming the first tab, but it does
+# put the session name in the status bar, so the hostname goes on the session
+# instead. Tmux keeps the single 'main' session it always used.
+if [[ -o interactive ]] && [[ -n "$SSH_TTY" ]] && [[ -z "$TMUX" ]] && [[ -z "$ZELLIJ" ]]; then
+    if command -v zellij >/dev/null 2>&1; then
+        zellij attach --create "$(hostname -s)"
+    elif command -v tmux >/dev/null 2>&1; then
+        tmux new-session -A -s main -n "$(hostname -s)"
+    fi
 fi
 
 # Color
@@ -75,6 +87,7 @@ alias grep='grep --color=auto'
 diff --color /dev/null /dev/null >/dev/null 2>&1 && alias diff='diff --color'
 alias vi='nvim'
 alias tm='tmux'
+alias zj='zellij'
 alias sa='ssha'
 alias cl='clear'
 alias g='git'

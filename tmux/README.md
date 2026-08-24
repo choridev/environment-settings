@@ -43,7 +43,7 @@ chmod +x install.sh
 The prefix is remapped from the Tmux default `Ctrl + b` to **`Ctrl + t`**. Press it first, then:
 
 - `v`: Enter copy mode.
-- `[` / `]`: Move to the previous / next pane (repeatable — keep pressing the key without re-entering the prefix).
+- `[` / `]`: Move to the previous / next pane. The prefix is needed for each move.
 - `\`: Split into two panes side by side (a vertical divider), keeping the current directory. The row is re-evened afterwards.
 - `-`: Split into two panes stacked top and bottom (a horizontal divider), keeping the current directory. The column is re-evened afterwards.
 - `i`: Toggle synchronised input — whatever you type goes to every pane in the window at once, and the dimming lifts for as long as it is on. Press it again to stop.
