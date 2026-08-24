@@ -80,8 +80,13 @@ Three settings have to agree for this to work, and dropping any one of them quie
 
 The trailing `r:|?=**` matcher is a fuzzy fallback that only runs when nothing else matched. It matches non-contiguously, so a query like `osmo` also pulls in `cosmos` — the picker is there to choose between them.
 
-### Automatic tmux
-When the session is interactive, arrives over SSH, and is not already inside tmux, the shell attaches to a session named `main` (creating it if needed) with the window named after the short hostname. Local shells are left alone.
+### Automatic Multiplexer
+When the session is interactive, arrives over SSH, and is not already inside a multiplexer, the shell attaches to one. [Zellij](../zellij) is used where it is installed, and [tmux](../tmux) otherwise. Local shells are left alone.
+
+Zellij attaches to a session named after the short hostname, creating it if needed — it has no equivalent of tmux's `-n` for naming the first tab, but it shows the session name in the status bar, so that is where the hostname goes. Tmux keeps the session named `main` with its window named after the hostname.
+
+> [!NOTE]
+> The guard checks that **both** `$TMUX` and `$ZELLIJ` are empty. Each multiplexer sets only its own variable, so testing one alone would launch Zellij inside every tmux pane, or tmux inside every Zellij pane.
 
 ### Persistent SSH agent
 The shell keeps one agent alive across every session by caching its environment in `~/.ssh-agent-info`, and only spawns a new agent when the cached one cannot be reached. It deliberately never runs `ssh-add`: key loading is left to `AddKeysToAgent yes` in `~/.ssh/config`, which adds a key to the agent the first time it is actually used. See the [`ssh`](../ssh) directory for that side of the setup.
@@ -110,9 +115,11 @@ Reachability is probed with `ssh-keyscan` in the background and cached for a day
 
 ### Picker Keys
 - `Enter`: Connect in the current shell.
-- `Ctrl + s`: Open the connection in a new pane below. *(inside tmux only)*
-- `Ctrl + o`: Open the connection in a new pane to the right. *(inside tmux only)*
-- `Ctrl + n`: Open the connection in a new tmux window named after the host. *(inside tmux only)*
+- `Ctrl + s`: Open the connection in a new pane below. *(inside a multiplexer only)*
+- `Ctrl + o`: Open the connection in a new pane to the right. *(inside a multiplexer only)*
+- `Ctrl + n`: Open the connection in a new window (tmux) or tab (Zellij) named after the host. *(inside a multiplexer only)*
+
+These three work in both Zellij and tmux; the picker checks `$ZELLIJ` first, so a Zellij session running inside tmux splits the pane you are actually looking at. Outside both, only `Enter` is offered.
 
 Tab completion for `ssha` is wired to the same host list.
 
@@ -121,6 +128,7 @@ Tab completion for `ssha` is wired to the same host list.
 - `l` / `ll`: `ls -F` / `ls -alFh`
 - `vi`: Open `nvim`
 - `tm`: `tmux`
+- `zj`: `zellij`
 - `sa`: `ssha`
 - `g`: `git`
 - `cl`: `clear`
