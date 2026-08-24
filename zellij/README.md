@@ -56,6 +56,7 @@ Press **`Ctrl + t`** first, then:
 - `;`: Back to the pane you were on before this one.
 - `←` `↓` `↑` `→`: Move focus in that direction.
 - `{` / `}`: Swap the focused pane with the one before / after it, carrying the focus along. Tmux's `swap-pane -U` / `-D`.
+- `<` / `>`: The same one level up — move the current tab left or right along the tab bar. Not a Tmux binding; Tmux spends these keys on menus that have no equivalent here.
 - `z`: Zoom — the focused pane fills the tab, and the tab bar marks it `(FULLSCREEN)`. Press again to restore.
 - `!`: Break the focused pane out into a tab of its own.
 
@@ -105,11 +106,10 @@ Tmux's `M-arrows` would resize, but this configuration binds nothing to `Alt` at
 
 Zellij's defaults put focus movement, resizing, layout cycling and pane grouping on `Alt` combinations that fire without any prefix. All 27 of them are removed here, so every `Alt` chord stays with the terminal and whatever is running in it.
 
-Nothing was lost on focus or resize — the arrow keys above, pane mode's `hjkl` and resize mode cover them. Four things did go:
+Nothing was lost on focus or resize — the arrow keys above, pane mode's `hjkl` and resize mode cover them. `MoveTab` moved to `<` and `>` rather than disappearing. What did go:
 
 | Gone | Note |
 | --- | --- |
-| `MoveTab` | Reordering tabs has no binding at all now |
 | `PreviousSwapLayout` | Only `space`, the forward direction, survives |
 | `TogglePaneInGroup` / `ToggleGroupMarking` | Zellij's pane grouping; no Tmux analogue |
 

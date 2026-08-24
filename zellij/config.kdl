@@ -54,6 +54,14 @@ keybinds clear-defaults=true {
         bind "{" { MovePaneBackwards; SwitchToMode "locked"; }
         bind "}" { MovePane; SwitchToMode "locked"; }
 
+        // The same idea one level up: '<' and '>' move the tab itself along
+        // the tab bar. Not a Tmux binding — Tmux spends these on its pane and
+        // window menus, which have no equivalent here, so the keys are free.
+        // This is where MoveTab lives now that Alt is unbound; without it,
+        // reordering tabs would have no binding at all.
+        bind "<" { MoveTab "left"; SwitchToMode "locked"; }
+        bind ">" { MoveTab "right"; SwitchToMode "locked"; }
+
         // Synchronised input with 'i': typing goes to every pane at once.
         // Scoped to the tab rather than Tmux's window, and the tab bar marks
         // it, so the status-right flag the .tmux.conf builds is unnecessary.
@@ -139,7 +147,7 @@ keybinds clear-defaults=true {
         // keeps every Alt chord free for the terminal and the programs in it.
         //
         // What the prefix does not reach any more, in exchange:
-        //   MoveTab              — no binding at all now
+        //   MoveTab              — rehomed onto '<' and '>' above
         //   PreviousSwapLayout   — only the forward direction survives, above
         //   TogglePaneInGroup,
         //   ToggleGroupMarking   — Zellij's pane grouping, no Tmux analogue
