@@ -4,7 +4,97 @@
 
 keybinds clear-defaults=true {
     locked {
-        bind "Ctrl g" { SwitchToMode "normal"; }
+        // Prefix: 'Ctrl+t', the same key Tmux uses. Zellij has no prefix of
+        // its own — the equivalent is starting in 'locked' and having every
+        // binding below end with SwitchToMode "locked", so one press unlocks
+        // for exactly one command.
+        bind "Ctrl t" { SwitchToMode "normal"; }
+    }
+    normal {
+        // Press the prefix twice to send a literal Ctrl+t to the program
+        // inside the pane. 20 is 0x14, the byte Ctrl+t produces.
+        bind "Ctrl t" { Write 20; SwitchToMode "locked"; }
+
+        // Splits: '\' for a vertical divider, '-' for a horizontal one.
+        // New panes inherit the focused pane's cwd, so there is no equivalent
+        // of Tmux's -c "#{pane_current_path}" to write out.
+        //
+        // Tmux re-evens the siblings with 'select-layout -E' after a split and
+        // after a pane closes; Zellij has no action for that, and nothing here
+        // replaces it. Splitting four times leaves 50/25/12/12, and closing a
+        // pane hands all of its space to one neighbour — measured, not assumed.
+        //
+        // 'auto_layout' does not help: it only applies to a NewPane with no
+        // direction, and what it applies is a whole swap layout — one pane
+        // beside an evenly divided column, closer to Tmux's 'main-vertical'
+        // than to '-E', with the nesting that mixing '\' and '-' builds up
+        // discarded. Alt+] cycles those layouts by hand if a reset is wanted.
+        bind "\\" { NewPane "right"; SwitchToMode "locked"; }
+        bind "-" { NewPane "down"; SwitchToMode "locked"; }
+
+        // Pane navigation with '[' and ']'. Neither action appears in
+        // Zellij's own default bindings, but both exist.
+        bind "[" { FocusPreviousPane; SwitchToMode "locked"; }
+        bind "]" { FocusNextPane; SwitchToMode "locked"; }
+
+        // Swapping the focused pane with its neighbour, Tmux's '{' and '}'.
+        // MovePaneBackwards / MovePane move the focused pane one position
+        // earlier or later in the tab and carry the focus with it, which is
+        // what 'swap-pane -U' and '-D' do.
+        bind "{" { MovePaneBackwards; SwitchToMode "locked"; }
+        bind "}" { MovePane; SwitchToMode "locked"; }
+
+        // Synchronised input with 'i': typing goes to every pane at once.
+        // Scoped to the tab rather than Tmux's window, and the tab bar marks
+        // it, so the status-right flag the .tmux.conf builds is unnecessary.
+        bind "i" { ToggleActiveSyncTab; SwitchToMode "locked"; }
+
+        // Tmux's own prefix defaults, which the .tmux.conf never restates and
+        // so never carried over. All of these are reachable through a sub-mode
+        // already ('c' is 't' then 'n', and so on); repeating them here is for
+        // the muscle memory of reaching them straight off the prefix.
+        //
+        // Only the keys that were free are here. The six that Zellij spends on
+        // entering a sub-mode — p, s, t, r, o, m — keep that meaning, so Tmux's
+        // 'p' for the previous tab is the one casualty; Alt+h does it instead.
+        //
+        // 'x' and '&' are left out on purpose. Tmux wraps both in
+        // confirm-before; Zellij has no equivalent, and an unprompted '&'
+        // closing a whole tab is not worth the keystroke it saves.
+        //
+        // Note 'z': in Tmux it zooms, which is ToggleFocusFullscreen here, but
+        // Zellij's own pane mode spends 'z' on TogglePaneFrames. Both stay,
+        // so C-t z zooms while C-t p z toggles frames.
+        bind "c" { NewTab; SwitchToMode "locked"; }
+        bind "n" { GoToNextTab; SwitchToMode "locked"; }
+        bind "l" { ToggleTab; SwitchToMode "locked"; }
+        bind "," { SwitchToMode "renametab"; TabNameInput 0; }
+        bind "!" { BreakPane; SwitchToMode "locked"; }
+        bind "z" { ToggleFocusFullscreen; SwitchToMode "locked"; }
+
+        // Tmux's 'next-layout'. The two cycle different sets — Tmux rotates
+        // five fixed layouts, Zellij the swap layouts its layout file defines
+        // — and Zellij has no equivalent of Tmux's M-1..M-5 for jumping
+        // straight to one. Alt+] and Alt+[ reach the same action without the
+        // prefix; this is here for the Tmux hand.
+        bind "space" { NextSwapLayout; SwitchToMode "locked"; }
+        bind "w" {
+            LaunchOrFocusPlugin "session-manager" {
+                floating true
+                move_to_focused_tab true
+            }
+            SwitchToMode "locked"
+        }
+
+        // The .tmux.conf's 'bind v copy-mode', as far as it goes. Scroll mode
+        // is where searching lives ('f'), so the entry survives; the selection
+        // half does not, because Zellij has no action that begins one — no
+        // BeginSelection, no rectangle toggle, no yank. From here 'e' opens the
+        // scrollback in $EDITOR, which is where a real visual-mode yank can
+        // still happen.
+        //
+        // No SwitchToMode "locked": staying in the mode is the point.
+        bind "v" { SwitchToMode "scroll"; }
     }
     pane {
         bind "left" { MoveFocus "left"; }
@@ -183,8 +273,13 @@ keybinds clear-defaults=true {
         bind "Alt Shift p" { ToggleGroupMarking; }
     }
     shared_except "locked" "renametab" "renamepane" {
-        bind "Ctrl g" { SwitchToMode "locked"; }
         bind "Ctrl q" { Quit; }
+    }
+    // 'normal' is excluded so the prefix keeps its send-prefix meaning there;
+    // in the sub-modes Ctrl+t is the way back to 'locked', the role the
+    // default config gave Ctrl+g.
+    shared_except "locked" "normal" "renametab" "renamepane" {
+        bind "Ctrl t" { SwitchToMode "locked"; }
     }
     shared_except "locked" "entersearch" {
         bind "enter" { SwitchToMode "locked"; }
@@ -339,8 +434,10 @@ default_mode "locked"
 // Options:
 //   - true (default)
 //   - false
-// 
-// mouse_mode false
+//
+// Already the default here, unlike Tmux where 'set -g mouse on' is needed.
+// Written out anyway so the intent survives a change of default.
+mouse_mode true
  
 // Toggle having pane frames around the panes
 // Options:
@@ -379,8 +476,9 @@ default_mode "locked"
 // (Requires restart)
 // Valid values: positive integers
 // Default value: 10000
-// 
-// scroll_buffer_size 10000
+//
+// Tmux's 'set -g history-limit 50000'.
+scroll_buffer_size 50000
  
 // Provide a command to execute when copying text. The text will be piped to
 // the stdin of the program to perform the copy. This can be used with
@@ -405,8 +503,16 @@ default_mode "locked"
  
 // Enable automatic copying (and clearing) of selection when releasing mouse
 // Default: true
-// 
-// copy_on_select true
+//
+// Together with 'copy_command' left unset above — which makes OSC 52 the copy
+// path — this covers Tmux's 'set -g set-clipboard on'. Both are already the
+// default; written out because the .tmux.conf states them too.
+//
+// The keyboard half of the Tmux copy bindings has no equivalent: Zellij cannot
+// select a region from the keyboard at all, so 'v' / 'Ctrl+v' / 'y' are gone.
+// What replaces them is a mouse drag, 's' then 'e' to open the scrollback in
+// $EDITOR, and 's' then 'c' to copy the last command's output.
+copy_on_select true
  
 // Path to the default editor to use to edit pane scrollbuffer
 // Default: $EDITOR or $VISUAL
