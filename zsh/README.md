@@ -86,7 +86,9 @@ When the session is interactive, arrives over SSH, and is not already inside a m
 Zellij attaches to a session named after the short hostname, creating it if needed — it has no equivalent of tmux's `-n` for naming the first tab, but it shows the session name in the status bar, so that is where the hostname goes. Tmux keeps the session named `main` with its window named after the hostname.
 
 > [!NOTE]
-> The guard checks that **both** `$TMUX` and `$ZELLIJ` are empty. Each multiplexer sets only its own variable, so testing one alone would launch Zellij inside every tmux pane, or tmux inside every Zellij pane.
+> The guard checks that **all three** of `$TMUX`, `$ZELLIJ` and `$HERDR_ENV` are empty. Each multiplexer sets only its own variable, so any single test lets the other two nest inside it.
+
+[Herdr](../herdr) is the reason the third test exists. A Herdr pane inherits `SSH_TTY` from the login shell and sets neither `$TMUX` nor `$ZELLIJ`, so while the guard checked only those two, starting Herdr — or splitting a pane inside it — opened Zellij within the new pane. `$HERDR_ENV` is Herdr's own marker for running inside Herdr; its agent skill file tests the same variable the same way.
 
 ### Persistent SSH agent
 The shell keeps one agent alive across every session by caching its environment in `~/.ssh-agent-info`, and only spawns a new agent when the cached one cannot be reached. It deliberately never runs `ssh-add`: key loading is left to `AddKeysToAgent yes` in `~/.ssh/config`, which adds a key to the agent the first time it is actually used. See the [`ssh`](../ssh) directory for that side of the setup.

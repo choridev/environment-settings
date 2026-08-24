@@ -6,14 +6,21 @@ export LESS='-R -F'
 
 # Multiplexer: Zellij where it exists, Tmux on machines without it.
 #
-# Both variables have to be clear, not just one. Each multiplexer sets only its
-# own, so testing $TMUX alone would start Zellij inside every Tmux pane, and
-# testing $ZELLIJ alone would do the reverse.
+# Every one of the three variables has to be clear, not just one. Each
+# multiplexer sets only its own, so any single test lets the other two nest:
+# checking $TMUX alone starts Zellij inside every Tmux pane, and so on.
+#
+# Herdr is the reason the third test is here. It inherits SSH_TTY from the
+# login shell and sets neither $TMUX nor $ZELLIJ, so with only the first two
+# tests every new Herdr pane — and every split — opened Zellij inside itself.
+# $HERDR_ENV is Herdr's own marker for "running inside Herdr"; its agent skill
+# file checks the same variable the same way.
 #
 # Zellij has no equivalent of Tmux's -n for naming the first tab, but it does
 # put the session name in the status bar, so the hostname goes on the session
 # instead. Tmux keeps the single 'main' session it always used.
-if [[ -o interactive ]] && [[ -n "$SSH_TTY" ]] && [[ -z "$TMUX" ]] && [[ -z "$ZELLIJ" ]]; then
+if [[ -o interactive ]] && [[ -n "$SSH_TTY" ]] \
+   && [[ -z "$TMUX" ]] && [[ -z "$ZELLIJ" ]] && [[ -z "$HERDR_ENV" ]]; then
     if command -v zellij >/dev/null 2>&1; then
         zellij attach --create "$(hostname -s)"
     elif command -v tmux >/dev/null 2>&1; then
