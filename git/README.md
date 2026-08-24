@@ -40,7 +40,10 @@ During the installation script, you will be prompted to enter:
 ## ✨ Features & Settings
 
 ### Core Settings
-- **Default Editor**: Set to `vim` for seamless commit message editing.
+- **Default Editor**: Deliberately **not** set. `core.editor` outranks `$VISUAL` and `$EDITOR`, so pinning it here overrides the shell — which is exactly what used to happen: this file said `vim` while [`zsh`](../zsh) exported `nvim`, and Git took the `vim`. With it unset, Git falls through to `$VISUAL`, then `$EDITOR`, then its own compiled-in default, so commit messages open in whatever the machine already uses — `nvim` here.
+
+> [!NOTE]
+> `.zshrc` only runs for interactive shells, so a Git command invoked from a script or a GUI may see neither variable. Git then falls back to its build default, which on Debian and Ubuntu is the `editor` alternative (`nano` here) rather than `vi`. Editing a commit message is interactive by nature, so this rarely comes up.
 - **Auto Prune**: Automatically removes remote-tracking references that no longer exist on the remote when fetching (`fetch.prune = true`).
 - **Default Branch**: Sets `main` as the default branch name when initializing new repositories.
 - **Auto Setup Remote**: Automatically sets the upstream tracking branch and creates it on the remote repository when you run `git push` for a newly created local branch (`push.autoSetupRemote = true`). No more typing `--set-upstream`!

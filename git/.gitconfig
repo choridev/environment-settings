@@ -11,8 +11,11 @@
 # ==========================================
 [init]
     defaultBranch = main
-[core]
-    editor = vim
+# No 'core.editor'. It outranks $VISUAL and $EDITOR, so setting it here would
+# override the shell — which is how this file used to pin Vim while the .zshrc
+# was already exporting nvim. Left unset, Git falls through to $VISUAL, then
+# $EDITOR, then its compiled-in default, and follows whatever the machine
+# already uses.
 [fetch]
     prune = true
 [push]
