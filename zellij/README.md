@@ -53,6 +53,8 @@ Press **`Ctrl + t`** first, then:
 - `\`: Split into two panes side by side (a vertical divider). New panes inherit the current directory, so no `-c` equivalent is needed.
 - `-`: Split into two panes stacked top and bottom (a horizontal divider).
 - `[` / `]`: Move to the previous / next pane. The prefix is needed for each move.
+- `;`: Back to the pane you were on before this one.
+- `←` `↓` `↑` `→`: Move focus in that direction.
 - `{` / `}`: Swap the focused pane with the one before / after it, carrying the focus along. Tmux's `swap-pane -U` / `-D`.
 - `z`: Zoom — the focused pane fills the tab, and the tab bar marks it `(FULLSCREEN)`. Press again to restore.
 - `!`: Break the focused pane out into a tab of its own.
@@ -63,6 +65,7 @@ A Zellij **tab** is what Tmux calls a **window**.
 
 - `c`: New tab.
 - `n`: Next tab.
+- `1`–`9`: Jump straight to that tab. Tmux numbers windows from 0 and Zellij numbers tabs from 1, so `0` is left unbound.
 - `l`: The tab you were on before this one.
 - `,`: Rename the current tab.
 - `w`: Open the session manager — a floating picker over sessions, their tabs and panes. The nearest builtin to `choose-tree`, but not the same shape: Tmux's `w` opens a window list for the session you are in, while this opens at the session level with a name field.
@@ -89,6 +92,12 @@ A Zellij **tab** is what Tmux calls a **window**.
 
 > [!NOTE]
 > `Ctrl + t` `s` `c` copies the output of the last command in one keystroke, which covers the most common reason for reaching into the scrollback at all. It needs OSC 133 shell integration.
+
+### Tmux Defaults With No Zellij Action
+
+`f` (find-window), `$` (rename-session), `=` (choose-buffer), `q` (display-panes), `:` and `?` are unbound because nothing here can implement them — there is no `SearchTab`, `FindTab` or `GoToTabName`, and while a `RenameSession` action exists there is no prompt mode to drive it the way `renametab` drives `,`. Tmux's `M-arrows` would resize, but Zellij already spends `Alt` + arrows on focus, so those keys are not free.
+
+`x` (kill-pane) and `&` (kill-window) are left out by choice: Tmux wraps both in `confirm-before` and Zellij has no equivalent, so they stay behind their sub-modes at `Ctrl + t` `p` `x` and `Ctrl + t` `t` `x`.
 
 ## 🔀 What Did Not Carry Over From Tmux
 

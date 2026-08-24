@@ -37,6 +37,15 @@ keybinds clear-defaults=true {
         bind "[" { FocusPreviousPane; SwitchToMode "locked"; }
         bind "]" { FocusNextPane; SwitchToMode "locked"; }
 
+        // Tmux's ';' for the previously focused pane, and its arrow keys for
+        // directional focus. Both are Tmux prefix defaults the .tmux.conf does
+        // not restate.
+        bind ";" { FocusLastPane; SwitchToMode "locked"; }
+        bind "left" { MoveFocus "left"; SwitchToMode "locked"; }
+        bind "down" { MoveFocus "down"; SwitchToMode "locked"; }
+        bind "up" { MoveFocus "up"; SwitchToMode "locked"; }
+        bind "right" { MoveFocus "right"; SwitchToMode "locked"; }
+
         // Swapping the focused pane with its neighbour, Tmux's '{' and '}'.
         // MovePaneBackwards / MovePane move the focused pane one position
         // earlier or later in the tab and carry the focus with it, which is
@@ -62,12 +71,31 @@ keybinds clear-defaults=true {
         // confirm-before; Zellij has no equivalent, and an unprompted '&'
         // closing a whole tab is not worth the keystroke it saves.
         //
+        // Left out for want of an action, not by choice: 'f' (find-window —
+        // there is no SearchTab, FindTab or GoToTabName), '$' (rename-session
+        // — the RenameSession action exists but there is no prompt mode to
+        // drive it, unlike renametab), '=' (no paste buffers), 'q'
+        // (display-panes), ':' and '?'. Tmux's M-arrows would resize, but
+        // Zellij already spends Alt+arrows on focus, so they are not free.
+        //
         // Note 'z': in Tmux it zooms, which is ToggleFocusFullscreen here, but
         // Zellij's own pane mode spends 'z' on TogglePaneFrames. Both stay,
         // so C-t z zooms while C-t p z toggles frames.
         bind "c" { NewTab; SwitchToMode "locked"; }
         bind "n" { GoToNextTab; SwitchToMode "locked"; }
         bind "l" { ToggleTab; SwitchToMode "locked"; }
+
+        // Tmux's numbered window select. Its windows start at 0 and Zellij's
+        // tabs at 1, so '0' has nothing to point at and is left unbound.
+        bind "1" { GoToTab 1; SwitchToMode "locked"; }
+        bind "2" { GoToTab 2; SwitchToMode "locked"; }
+        bind "3" { GoToTab 3; SwitchToMode "locked"; }
+        bind "4" { GoToTab 4; SwitchToMode "locked"; }
+        bind "5" { GoToTab 5; SwitchToMode "locked"; }
+        bind "6" { GoToTab 6; SwitchToMode "locked"; }
+        bind "7" { GoToTab 7; SwitchToMode "locked"; }
+        bind "8" { GoToTab 8; SwitchToMode "locked"; }
+        bind "9" { GoToTab 9; SwitchToMode "locked"; }
         bind "," { SwitchToMode "renametab"; TabNameInput 0; }
         bind "!" { BreakPane; SwitchToMode "locked"; }
         bind "z" { ToggleFocusFullscreen; SwitchToMode "locked"; }
