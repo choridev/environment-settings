@@ -39,6 +39,18 @@ cycle_pane_next = "prefix+]"
 # Tmux's ';' — back to the pane focused before this one. Unset by default.
 last_pane = "prefix+;"
 
+# Herdr binds close_pane to prefix+x and close_tab to prefix+shift+x, and both
+# take effect immediately. Tmux wraps its 'x' and '&' in confirm-before; Herdr's
+# only confirmation setting is ui.confirm_close, which by its own description
+# covers closing a *workspace*, not a pane or a tab. An unprompted close one key
+# from the prefix is not worth the keystroke it saves, so both are emptied.
+#
+# What remains: exiting the shell closes a pane, closing the last pane in a tab
+# closes the tab, and prefix+shift+d still closes a workspace — that one does
+# ask first.
+close_pane = ""
+close_tab = ""
+
 # Herdr has no copy mode and no keyboard selection, so the .tmux.conf's
 # 'bind v copy-mode' points at the nearest thing: the scrollback opened in
 # $EDITOR, where a real Vim visual selection and yank are available. 'v' is

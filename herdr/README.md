@@ -54,7 +54,10 @@ Press **`Ctrl + t`** first, then:
 - `h` `j` `k` `l` or `←` `↓` `↑` `→`: Move focus in that direction. Both sets work.
 - `v`: Open the scrollback in `$EDITOR`.
 - `{` / `}`: Swap the focused pane with its neighbour to the left / right.
-- `x`: Close the pane. `z`: Zoom. `r`: Resize mode.
+- `z`: Zoom. `r`: Resize mode.
+
+> [!NOTE]
+> Herdr binds `close_pane` to `prefix+x` and `close_tab` to `prefix+shift+x`, and both take effect immediately. Both are emptied here. Tmux wraps its `x` and `&` in `confirm-before`; Herdr's only confirmation setting is `ui.confirm_close`, which by its own description covers closing a *workspace*, not a pane or a tab. Exit the shell to close a pane; closing the last pane in a tab closes the tab.
 
 > [!NOTE]
 > `focus_pane_*` takes one key each, so `hjkl` holds the native bindings — Herdr's own default, and the Vim answer — and the arrow keys, which is what Tmux binds `select-pane` to, run `herdr pane focus` as custom commands instead. Same result either way; the arrows cost one process spawn per press.
@@ -104,4 +107,4 @@ Herdr's defaults are the other way round: workspaces on the arrow keys, panes on
 - **Copy mode.** There is no keyboard selection or yank in Herdr itself. `Ctrl + t` `v` is pointed at the nearest thing — the scrollback opened in `$EDITOR` — so the `.tmux.conf`'s `bind v copy-mode` habit still lands somewhere useful, and a real Vim visual selection and yank happen there. Herdr's own default for that was `prefix+e`, now unbound; `v` was free because `split_vertical` moved onto the backslash.
 - **Layout presets.** No `next-layout` action, so Tmux's `Space` has no home, and neither does `select-layout -E`.
 - **Break pane out to a window.** No action for Tmux's `!`.
-- **`x` and `&` confirmation.** Herdr closes panes and tabs without the `confirm-before` prompt Tmux wraps them in. `x` is left at Herdr's default; `&` is not bound at all.
+- **`x` and `&` confirmation.** Herdr closes panes and tabs without the `confirm-before` prompt Tmux wraps them in — `ui.confirm_close` covers only workspaces. So nothing here closes either one from the keyboard: `close_pane` and `close_tab` are both emptied, and `&` was never mapped. `prefix+shift+d` closes a workspace and does ask first.
