@@ -72,6 +72,16 @@ A Herdr **tab** is what Tmux calls a **window**.
 
 `c`, `n`, `p` and `1`–`9` are already Herdr's defaults and match Tmux as they stand. Herdr has no sub-modes competing for those letters, so `p` means *previous tab* here — something the Zellij port could not manage, since Zellij spends `p` on entering pane mode.
 
+### Agents
+
+- `a` / `Shift + a`: Next / previous agent.
+- `Ctrl + 1`–`Ctrl + 9`: Jump straight to that agent.
+
+Herdr leaves all three unbound by default. Unlike the workspace picker these are single-shot, so the prefix is needed for each step rather than once for a run of them — `prefix+w` can do better only because `workspace_picker` opens a mode, and the set of mode-opening actions is fixed at `help`, `settings`, `open_notification_target`, `workspace_picker`, `goto`, `resize_mode` and `toggle_sidebar`. None of them concerns agents, and a config cannot define a new mode.
+
+> [!NOTE]
+> `focus_agent` is an indexed binding: the literal `1..9` covers all nine in one line, and `herdr config check` rejects any other form with *"indexed keybinding must use 1..9"*. Herdr's own example uses `prefix+alt+1..9`; `ctrl` is used here so `Alt` chords stay with the terminal.
+
 ### Session
 
 - `d`: Detach. `w`: Workspace picker. `?`: Help. `b`: Toggle the sidebar.

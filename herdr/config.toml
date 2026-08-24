@@ -104,6 +104,27 @@ navigate_pane_up = ""
 navigate_pane_right = "l"
 
 # ---------------------------------------------------------------------------
+# Agents
+# ---------------------------------------------------------------------------
+#
+# All three are unset in Herdr's defaults.
+#
+# There is no agent equivalent of the workspace picker: 'prefix+w' works the
+# way it does because workspace_picker opens navigate mode, and the set of
+# mode-opening actions is fixed — help, settings, open_notification_target,
+# workspace_picker, goto, resize_mode, toggle_sidebar. None of them is about
+# agents, and a config cannot define a new mode. So these are single-shot: the
+# prefix is needed for each step rather than once for a run of them.
+next_agent = "prefix+a"
+previous_agent = "prefix+shift+a"
+
+# Indexed binding — one line covers agents 1 through 9. The literal '1..9' is
+# required; `herdr config check` rejects anything else with "indexed keybinding
+# must use 1..9". Ctrl rather than the Alt of Herdr's own example, to leave Alt
+# chords with the terminal.
+focus_agent = "prefix+ctrl+1..9"
+
+# ---------------------------------------------------------------------------
 # Swapping panes, Tmux's '{' and '}'
 # ---------------------------------------------------------------------------
 #
