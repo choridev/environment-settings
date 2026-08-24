@@ -95,9 +95,25 @@ A Zellij **tab** is what Tmux calls a **window**.
 
 ### Tmux Defaults With No Zellij Action
 
-`f` (find-window), `$` (rename-session), `=` (choose-buffer), `q` (display-panes), `:` and `?` are unbound because nothing here can implement them — there is no `SearchTab`, `FindTab` or `GoToTabName`, and while a `RenameSession` action exists there is no prompt mode to drive it the way `renametab` drives `,`. Tmux's `M-arrows` would resize, but Zellij already spends `Alt` + arrows on focus, so those keys are not free.
+`f` (find-window), `$` (rename-session), `=` (choose-buffer), `q` (display-panes), `:` and `?` are unbound because nothing here can implement them. There is no `SearchTab`, `FindTab` or `GoToTabName` for `f`. For `$`, a `RenameSession` action does exist, but no input mode exists to type the new name into — compare `,` above, which is bound and works precisely because Zellij *does* have a `renametab` mode behind it.
+
+Tmux's `M-arrows` would resize, but this configuration binds nothing to `Alt` at all (see below). Resize mode, `Ctrl + t` `r`, covers the same ground.
 
 `x` (kill-pane) and `&` (kill-window) are left out by choice: Tmux wraps both in `confirm-before` and Zellij has no equivalent, so they stay behind their sub-modes at `Ctrl + t` `p` `x` and `Ctrl + t` `t` `x`.
+
+### No Alt Bindings
+
+Zellij's defaults put focus movement, resizing, layout cycling and pane grouping on `Alt` combinations that fire without any prefix. All 27 of them are removed here, so every `Alt` chord stays with the terminal and whatever is running in it.
+
+Nothing was lost on focus or resize — the arrow keys above, pane mode's `hjkl` and resize mode cover them. Four things did go:
+
+| Gone | Note |
+| --- | --- |
+| `MoveTab` | Reordering tabs has no binding at all now |
+| `PreviousSwapLayout` | Only `space`, the forward direction, survives |
+| `TogglePaneInGroup` / `ToggleGroupMarking` | Zellij's pane grouping; no Tmux analogue |
+
+One nuance also went with them: the `Alt` focus keys used `MoveFocusOrTab`, which crossed into the neighbouring tab when focus was already at the edge of the screen. Plain `MoveFocus` stops at the edge instead.
 
 ## 🔀 What Did Not Carry Over From Tmux
 

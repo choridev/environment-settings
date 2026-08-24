@@ -28,7 +28,8 @@ keybinds clear-defaults=true {
         // direction, and what it applies is a whole swap layout — one pane
         // beside an evenly divided column, closer to Tmux's 'main-vertical'
         // than to '-E', with the nesting that mixing '\' and '-' builds up
-        // discarded. Alt+] cycles those layouts by hand if a reset is wanted.
+        // discarded. Prefix-space cycles those layouts by hand if a reset is
+        // wanted; it is the closest thing to a repair.
         bind "\\" { NewPane "right"; SwitchToMode "locked"; }
         bind "-" { NewPane "down"; SwitchToMode "locked"; }
 
@@ -65,7 +66,8 @@ keybinds clear-defaults=true {
         //
         // Only the keys that were free are here. The six that Zellij spends on
         // entering a sub-mode — p, s, t, r, o, m — keep that meaning, so Tmux's
-        // 'p' for the previous tab is the one casualty; Alt+h does it instead.
+        // 'p' for the previous tab is the one casualty; prefix 't' then 'k'
+        // does it instead.
         //
         // 'x' and '&' are left out on purpose. Tmux wraps both in
         // confirm-before; Zellij has no equivalent, and an unprompted '&'
@@ -74,9 +76,12 @@ keybinds clear-defaults=true {
         // Left out for want of an action, not by choice: 'f' (find-window —
         // there is no SearchTab, FindTab or GoToTabName), '$' (rename-session
         // — the RenameSession action exists but there is no prompt mode to
-        // drive it, unlike renametab), '=' (no paste buffers), 'q'
-        // (display-panes), ':' and '?'. Tmux's M-arrows would resize, but
-        // Zellij already spends Alt+arrows on focus, so they are not free.
+        // drive it — note the contrast with ',' just below, which works only
+        // because 'renametab' does exist), '=' (no paste buffers), 'q'
+        // (display-panes), ':' and '?'.
+        //
+        // Tmux's M-arrows would resize, but nothing here binds Alt at all —
+        // see the note at the end of this block. Resize mode ('r') covers it.
         //
         // Note 'z': in Tmux it zooms, which is ToggleFocusFullscreen here, but
         // Zellij's own pane mode spends 'z' on TogglePaneFrames. Both stay,
@@ -103,8 +108,8 @@ keybinds clear-defaults=true {
         // Tmux's 'next-layout'. The two cycle different sets — Tmux rotates
         // five fixed layouts, Zellij the swap layouts its layout file defines
         // — and Zellij has no equivalent of Tmux's M-1..M-5 for jumping
-        // straight to one. Alt+] and Alt+[ reach the same action without the
-        // prefix; this is here for the Tmux hand.
+        // straight to one. Only the forward direction is bound, matching Tmux,
+        // which has no previous-layout default either.
         bind "space" { NextSwapLayout; SwitchToMode "locked"; }
         bind "w" {
             LaunchOrFocusPlugin "session-manager" {
@@ -127,6 +132,22 @@ keybinds clear-defaults=true {
         //
         // No SwitchToMode "locked": staying in the mode is the point.
         bind "v" { SwitchToMode "scroll"; }
+
+        // Alt is deliberately unbound everywhere in this file. Zellij's
+        // defaults put focus, resize, layout cycling and pane grouping on Alt
+        // combinations that work without the prefix; all 27 are gone, which
+        // keeps every Alt chord free for the terminal and the programs in it.
+        //
+        // What the prefix does not reach any more, in exchange:
+        //   MoveTab              — no binding at all now
+        //   PreviousSwapLayout   — only the forward direction survives, above
+        //   TogglePaneInGroup,
+        //   ToggleGroupMarking   — Zellij's pane grouping, no Tmux analogue
+        //
+        // Focus and resize lost nothing: the arrows above, pane mode's hjkl
+        // and resize mode cover them. The one nuance dropped is
+        // MoveFocusOrTab, which crossed into the neighbouring tab at the edge
+        // of the screen; plain MoveFocus stops there instead.
     }
     pane {
         bind "left" { MoveFocus "left"; }
@@ -214,17 +235,9 @@ keybinds clear-defaults=true {
         bind "tab" { MovePane; }
     }
     scroll {
-        bind "Alt left" { MoveFocusOrTab "left"; SwitchToMode "locked"; }
-        bind "Alt down" { MoveFocus "down"; SwitchToMode "locked"; }
-        bind "Alt up" { MoveFocus "up"; SwitchToMode "locked"; }
-        bind "Alt right" { MoveFocusOrTab "right"; SwitchToMode "locked"; }
         bind "c" { CopyLastCommandOutput; SwitchToMode "locked"; }
         bind "e" { EditScrollback; SwitchToMode "locked"; }
         bind "f" { SwitchToMode "entersearch"; SearchInput 0; }
-        bind "Alt h" { MoveFocusOrTab "left"; SwitchToMode "locked"; }
-        bind "Alt j" { MoveFocus "down"; SwitchToMode "locked"; }
-        bind "Alt k" { MoveFocus "up"; SwitchToMode "locked"; }
-        bind "Alt l" { MoveFocusOrTab "right"; SwitchToMode "locked"; }
         bind "s" { SwitchToMode "normal"; }
     }
     search {
@@ -282,27 +295,6 @@ keybinds clear-defaults=true {
             }
             SwitchToMode "locked"
         }
-    }
-    shared_among "normal" "locked" {
-        bind "Alt left" { MoveFocusOrTab "left"; }
-        bind "Alt down" { MoveFocus "down"; }
-        bind "Alt up" { MoveFocus "up"; }
-        bind "Alt right" { MoveFocusOrTab "right"; }
-        bind "Alt +" { Resize "Increase"; }
-        bind "Alt -" { Resize "Decrease"; }
-        bind "Alt =" { Resize "Increase"; }
-        bind "Alt [" { PreviousSwapLayout; }
-        bind "Alt ]" { NextSwapLayout; }
-        bind "Alt f" { ToggleFloatingPanes; }
-        bind "Alt h" { MoveFocusOrTab "left"; }
-        bind "Alt i" { MoveTab "left"; }
-        bind "Alt j" { MoveFocus "down"; }
-        bind "Alt k" { MoveFocus "up"; }
-        bind "Alt l" { MoveFocusOrTab "right"; }
-        bind "Alt n" { NewPane; }
-        bind "Alt o" { MoveTab "right"; }
-        bind "Alt p" { TogglePaneInGroup; }
-        bind "Alt Shift p" { ToggleGroupMarking; }
     }
     shared_except "locked" "renametab" "renamepane" {
         bind "Ctrl q" { Quit; }
