@@ -1,0 +1,127 @@
+# Herdr configuration, keyed to match the Tmux setup in this repository so the
+# same fingers work in both. Only values that differ from Herdr's defaults are
+# written out; `herdr --default-config` prints the full reference, and
+# `herdr config check` validates this file.
+
+onboarding = false
+
+[theme]
+name = "catppuccin-latte"
+auto_switch = true
+light_name = "catppuccin-latte"
+dark_name = "catppuccin"
+
+[keys]
+# Prefix: 'Ctrl+t', the same key the .tmux.conf uses, in place of Herdr's own
+# 'ctrl+b'. Herdr is already prefix-driven, so unlike Zellij there is no mode
+# machinery to build — the prefix is a real prefix.
+prefix = "ctrl+t"
+
+# ---------------------------------------------------------------------------
+# Panes
+# ---------------------------------------------------------------------------
+
+# Splits. Herdr names these after the divider, the same convention the
+# .tmux.conf comments use: split_vertical puts the new pane to the right,
+# split_horizontal puts it below. Confirmed against Herdr's own guide, which
+# documents the defaults as "prefix+v (right) / prefix+minus (down)".
+#
+# A literal backslash must be spelled out. "prefix+\" is rejected by
+# `herdr config check`; "prefix+backslash" is accepted.
+split_vertical = "prefix+backslash"
+split_horizontal = "prefix+minus"
+
+# Tmux's '[' and ']'. Herdr cycles rather than stepping through an index, but
+# the direction is the same.
+cycle_pane_previous = "prefix+["
+cycle_pane_next = "prefix+]"
+
+# Tmux's ';' — back to the pane focused before this one. Unset by default.
+last_pane = "prefix+;"
+
+# Herdr has no copy mode and no keyboard selection, so the .tmux.conf's
+# 'bind v copy-mode' points at the nearest thing: the scrollback opened in
+# $EDITOR, where a real Vim visual selection and yank are available. 'v' is
+# free because split_vertical moved off it and onto the backslash above.
+# Herdr's default for this was prefix+e, now unbound.
+edit_scrollback = "prefix+v"
+
+# hjkl, which is both Herdr's own default and the Vim answer. Tmux uses the
+# arrow keys for select-pane instead; those are bound too, further down, so
+# neither hand has to move.
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+
+# ---------------------------------------------------------------------------
+# Tabs
+# ---------------------------------------------------------------------------
+#
+# A Herdr tab is what Tmux calls a window.
+#
+# new_tab, next_tab, previous_tab and switch_tab already match Tmux and are
+# left at their defaults: prefix+c, prefix+n, prefix+p and prefix+1..9. Herdr
+# has no sub-modes competing for those letters, so 'p' means previous tab here,
+# which the Zellij port could not manage.
+rename_tab = "prefix+,"
+
+# '<' and '>' move the tab along the tab bar. Not a Tmux binding — Tmux spends
+# these on menus that Herdr has no equivalent for, so the keys are free.
+move_tab_previous = "prefix+<"
+move_tab_next = "prefix+>"
+
+# ---------------------------------------------------------------------------
+# Session
+# ---------------------------------------------------------------------------
+
+# Tmux's 'd'. Herdr's default is prefix+q.
+detach = "prefix+d"
+
+# ---------------------------------------------------------------------------
+# Swapping panes, Tmux's '{' and '}'
+# ---------------------------------------------------------------------------
+#
+# Herdr has no keybinding action for this, but it does have `herdr pane swap`,
+# so a custom command stands in. type = "shell" runs it detached, which is what
+# a layout change wants — no pane opens and nothing waits.
+#
+# Not an exact port: Tmux's swap-pane -U/-D walk the pane order, while Herdr
+# swaps with whatever sits in a given direction. With a plain row or column the
+# two agree; in a nested layout they can differ.
+[[keys.command]]
+key = "prefix+{"
+type = "shell"
+command = "herdr pane swap --current --direction left"
+
+[[keys.command]]
+key = "prefix+}"
+type = "shell"
+command = "herdr pane swap --current --direction right"
+
+# ---------------------------------------------------------------------------
+# Arrow-key focus, Tmux's select-pane
+# ---------------------------------------------------------------------------
+#
+# focus_pane_* takes one key each and hjkl has it, so the arrows come through
+# `herdr pane focus` instead. Same result, one process spawn per press — worth
+# it to keep both the Vim keys and the Tmux ones.
+[[keys.command]]
+key = "prefix+left"
+type = "shell"
+command = "herdr pane focus --current --direction left"
+
+[[keys.command]]
+key = "prefix+down"
+type = "shell"
+command = "herdr pane focus --current --direction down"
+
+[[keys.command]]
+key = "prefix+up"
+type = "shell"
+command = "herdr pane focus --current --direction up"
+
+[[keys.command]]
+key = "prefix+right"
+type = "shell"
+command = "herdr pane focus --current --direction right"
