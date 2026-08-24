@@ -54,7 +54,10 @@ Press **`Ctrl + t`** first, then:
 - `h` `j` `k` `l` or `←` `↓` `↑` `→`: Move focus in that direction. Both sets work.
 - `v`: Open the scrollback in `$EDITOR`.
 - `{` / `}`: Swap the focused pane with its neighbour to the left / right.
-- `x`: Close the pane. `z`: Zoom. `r`: Resize mode.
+- `z`: Zoom. `r`: Resize mode.
+
+> [!NOTE]
+> Herdr binds `close_pane` to `prefix+x` and `close_tab` to `prefix+shift+x`, and both take effect immediately. Both are emptied here. Tmux wraps its `x` and `&` in `confirm-before`; Herdr's only confirmation setting is `ui.confirm_close`, which by its own description covers closing a *workspace*, not a pane or a tab. Exit the shell to close a pane; closing the last pane in a tab closes the tab.
 
 > [!NOTE]
 > `focus_pane_*` takes one key each, so `hjkl` holds the native bindings — Herdr's own default, and the Vim answer — and the arrow keys, which is what Tmux binds `select-pane` to, run `herdr pane focus` as custom commands instead. Same result either way; the arrows cost one process spawn per press.
@@ -72,9 +75,31 @@ A Herdr **tab** is what Tmux calls a **window**.
 
 `c`, `n`, `p` and `1`–`9` are already Herdr's defaults and match Tmux as they stand. Herdr has no sub-modes competing for those letters, so `p` means *previous tab* here — something the Zellij port could not manage, since Zellij spends `p` on entering pane mode.
 
+### Agents
+
+- `a` / `Shift + a`: Next / previous agent.
+- `Ctrl + 1`–`Ctrl + 9`: Jump straight to that agent.
+
+Herdr leaves all three unbound by default. Unlike the workspace picker these are single-shot, so the prefix is needed for each step rather than once for a run of them — `prefix+w` can do better only because `workspace_picker` opens a mode, and the set of mode-opening actions is fixed at `help`, `settings`, `open_notification_target`, `workspace_picker`, `goto`, `resize_mode` and `toggle_sidebar`. None of them concerns agents, and a config cannot define a new mode.
+
+> [!NOTE]
+> `focus_agent` is an indexed binding: the literal `1..9` covers all nine in one line, and `herdr config check` rejects any other form with *"indexed keybinding must use 1..9"*. Herdr's own example uses `prefix+alt+1..9`; `ctrl` is used here so `Alt` chords stay with the terminal.
+
 ### Session
 
 - `d`: Detach. `w`: Workspace picker. `?`: Help. `b`: Toggle the sidebar.
+
+### Inside the Picker
+
+`w` opens navigate mode, which has its own keys — local to the picker and independent of the pane focus keys above.
+
+- `k` / `j`: Previous / next workspace.
+- `h` / `l` or `←` / `→`: Previous / next pane.
+
+Herdr's defaults are the other way round: workspaces on the arrow keys, panes on all four of `hjkl`. Panes are already reachable from the prefix with `[`, `]` and `h`/`l`, so the vertical pair is worth more on the workspace list, which is the thing actually stacked vertically in the picker.
+
+> [!NOTE]
+> `navigate_pane_down` and `navigate_pane_up` are set to the empty string rather than left out. Their defaults are `j` and `k`, and `herdr config check` accepts that overlap without complaining, which would leave it undecided at runtime which of the two moves. The left and right arrows are hardcoded by Herdr and keep working regardless.
 
 ## 🔀 What Did Not Carry Over From Tmux
 
@@ -82,4 +107,4 @@ A Herdr **tab** is what Tmux calls a **window**.
 - **Copy mode.** There is no keyboard selection or yank in Herdr itself. `Ctrl + t` `v` is pointed at the nearest thing — the scrollback opened in `$EDITOR` — so the `.tmux.conf`'s `bind v copy-mode` habit still lands somewhere useful, and a real Vim visual selection and yank happen there. Herdr's own default for that was `prefix+e`, now unbound; `v` was free because `split_vertical` moved onto the backslash.
 - **Layout presets.** No `next-layout` action, so Tmux's `Space` has no home, and neither does `select-layout -E`.
 - **Break pane out to a window.** No action for Tmux's `!`.
-- **`x` and `&` confirmation.** Herdr closes panes and tabs without the `confirm-before` prompt Tmux wraps them in. `x` is left at Herdr's default; `&` is not bound at all.
+- **`x` and `&` confirmation.** Herdr closes panes and tabs without the `confirm-before` prompt Tmux wraps them in — `ui.confirm_close` covers only workspaces. So nothing here closes either one from the keyboard: `close_pane` and `close_tab` are both emptied, and `&` was never mapped. `prefix+shift+d` closes a workspace and does ask first.

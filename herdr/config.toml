@@ -39,6 +39,18 @@ cycle_pane_next = "prefix+]"
 # Tmux's ';' — back to the pane focused before this one. Unset by default.
 last_pane = "prefix+;"
 
+# Herdr binds close_pane to prefix+x and close_tab to prefix+shift+x, and both
+# take effect immediately. Tmux wraps its 'x' and '&' in confirm-before; Herdr's
+# only confirmation setting is ui.confirm_close, which by its own description
+# covers closing a *workspace*, not a pane or a tab. An unprompted close one key
+# from the prefix is not worth the keystroke it saves, so both are emptied.
+#
+# What remains: exiting the shell closes a pane, closing the last pane in a tab
+# closes the tab, and prefix+shift+d still closes a workspace — that one does
+# ask first.
+close_pane = ""
+close_tab = ""
+
 # Herdr has no copy mode and no keyboard selection, so the .tmux.conf's
 # 'bind v copy-mode' points at the nearest thing: the scrollback opened in
 # $EDITOR, where a real Vim visual selection and yank are available. 'v' is
@@ -77,6 +89,52 @@ move_tab_next = "prefix+>"
 
 # Tmux's 'd'. Herdr's default is prefix+q.
 detach = "prefix+d"
+
+# ---------------------------------------------------------------------------
+# Navigate mode — the picker on prefix+w
+# ---------------------------------------------------------------------------
+#
+# These are local to that picker and independent of focus_pane_* above.
+#
+# Herdr's defaults put workspaces on the arrow keys and panes on hjkl. Panes
+# are already reachable from the prefix with '[', ']' and h/l, so the vertical
+# pair is worth more on the workspace list, which is the thing actually stacked
+# vertically here.
+#
+# navigate_pane_down and _up have to be emptied rather than left out. Their
+# defaults are 'j' and 'k', and while `herdr config check` accepts the overlap
+# without complaint, that leaves which one wins undecided at runtime. Empty is
+# unambiguous.
+#
+# The left and right arrows still move between panes — Herdr hardcodes those
+# and they are not configurable.
+navigate_workspace_up = "k"
+navigate_workspace_down = "j"
+navigate_pane_left = "h"
+navigate_pane_down = ""
+navigate_pane_up = ""
+navigate_pane_right = "l"
+
+# ---------------------------------------------------------------------------
+# Agents
+# ---------------------------------------------------------------------------
+#
+# All three are unset in Herdr's defaults.
+#
+# There is no agent equivalent of the workspace picker: 'prefix+w' works the
+# way it does because workspace_picker opens navigate mode, and the set of
+# mode-opening actions is fixed — help, settings, open_notification_target,
+# workspace_picker, goto, resize_mode, toggle_sidebar. None of them is about
+# agents, and a config cannot define a new mode. So these are single-shot: the
+# prefix is needed for each step rather than once for a run of them.
+next_agent = "prefix+a"
+previous_agent = "prefix+shift+a"
+
+# Indexed binding — one line covers agents 1 through 9. The literal '1..9' is
+# required; `herdr config check` rejects anything else with "indexed keybinding
+# must use 1..9". Ctrl rather than the Alt of Herdr's own example, to leave Alt
+# chords with the terminal.
+focus_agent = "prefix+ctrl+1..9"
 
 # ---------------------------------------------------------------------------
 # Swapping panes, Tmux's '{' and '}'
