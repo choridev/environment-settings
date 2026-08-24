@@ -79,6 +79,31 @@ move_tab_next = "prefix+>"
 detach = "prefix+d"
 
 # ---------------------------------------------------------------------------
+# Navigate mode — the picker on prefix+w
+# ---------------------------------------------------------------------------
+#
+# These are local to that picker and independent of focus_pane_* above.
+#
+# Herdr's defaults put workspaces on the arrow keys and panes on hjkl. Panes
+# are already reachable from the prefix with '[', ']' and h/l, so the vertical
+# pair is worth more on the workspace list, which is the thing actually stacked
+# vertically here.
+#
+# navigate_pane_down and _up have to be emptied rather than left out. Their
+# defaults are 'j' and 'k', and while `herdr config check` accepts the overlap
+# without complaint, that leaves which one wins undecided at runtime. Empty is
+# unambiguous.
+#
+# The left and right arrows still move between panes — Herdr hardcodes those
+# and they are not configurable.
+navigate_workspace_up = "k"
+navigate_workspace_down = "j"
+navigate_pane_left = "h"
+navigate_pane_down = ""
+navigate_pane_up = ""
+navigate_pane_right = "l"
+
+# ---------------------------------------------------------------------------
 # Swapping panes, Tmux's '{' and '}'
 # ---------------------------------------------------------------------------
 #

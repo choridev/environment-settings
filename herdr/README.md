@@ -76,6 +76,18 @@ A Herdr **tab** is what Tmux calls a **window**.
 
 - `d`: Detach. `w`: Workspace picker. `?`: Help. `b`: Toggle the sidebar.
 
+### Inside the Picker
+
+`w` opens navigate mode, which has its own keys — local to the picker and independent of the pane focus keys above.
+
+- `k` / `j`: Previous / next workspace.
+- `h` / `l` or `←` / `→`: Previous / next pane.
+
+Herdr's defaults are the other way round: workspaces on the arrow keys, panes on all four of `hjkl`. Panes are already reachable from the prefix with `[`, `]` and `h`/`l`, so the vertical pair is worth more on the workspace list, which is the thing actually stacked vertically in the picker.
+
+> [!NOTE]
+> `navigate_pane_down` and `navigate_pane_up` are set to the empty string rather than left out. Their defaults are `j` and `k`, and `herdr config check` accepts that overlap without complaining, which would leave it undecided at runtime which of the two moves. The left and right arrows are hardcoded by Herdr and keep working regardless.
+
 ## 🔀 What Did Not Carry Over From Tmux
 
 - **Synchronised input.** No action for it. `herdr pane input` sets right-click routing, not input broadcast, so the `.tmux.conf`'s `i` has nothing to map onto.
