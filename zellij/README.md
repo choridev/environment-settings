@@ -65,16 +65,22 @@ A Zellij **tab** is what Tmux calls a **window**.
 - `n`: Next tab.
 - `l`: The tab you were on before this one.
 - `,`: Rename the current tab.
-- `w`: Open the session manager — sessions, their tabs and panes, in one floating picker. The closest thing to `choose-tree`.
+- `w`: Open the session manager — a floating picker over sessions, their tabs and panes. The nearest builtin to `choose-tree`, but not the same shape: Tmux's `w` opens a window list for the session you are in, while this opens at the session level with a name field.
+- `d`: Detach. The session keeps running and `zellij attach` brings it back.
 - `i`: Toggle synchronised input, so typing goes to every pane in the tab at once. The tab bar marks it, so no status-bar flag is needed.
 - `space`: Cycle the layout.
 
 ### Scrollback & Search
 
 - `v`: Enter scroll mode, the way `v` enters copy mode in the Tmux config. From there:
-  - `f`: Search. Type the term, `Enter`, then `n` / `p` for next and previous, `c` / `o` / `w` to toggle case sensitivity, whole-word and wrap.
+  - `f`: Search. Type the term, `Enter`, then `n` / `N` for next and previous, `c` / `o` / `w` to toggle case sensitivity, whole-word and wrap.
   - `e`: Open the scrollback in `$EDITOR`.
   - `Esc`: Leave.
+
+`n` / `N` replaces Zellij's own `n` / `p`, to match Vim and the `/` search the editor gives you on `e`. The status bar picks the change up on its own — it renders its hints from the bindings actually in the config, so the search line reads `n Down  N Up`.
+
+> [!NOTE]
+> Zellij does not echo the search term while you type it. The status bar says `ENTERING SEARCH TERM` and nothing more, so a typo only shows up as a search that finds nothing. This is Zellij's own behaviour, not something this configuration causes — its default config does the same. Backspace works, blind.
 
 > [!IMPORTANT]
 > **There is no keyboard text selection in Zellij.** No `v` to begin a selection, no `Ctrl + v` block mode, no `y`. Those actions do not exist — `BeginSelection`, `RectangleToggle` and `Yank` are not part of Zellij's vocabulary, so the Tmux copy-mode bindings have nothing to map onto.
