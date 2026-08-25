@@ -123,6 +123,8 @@ Reachability is probed with `ssh-keyscan` in the background and cached for a day
 
 These three work in both Zellij and tmux; the picker checks `$ZELLIJ` first, so a Zellij session running inside tmux splits the pane you are actually looking at. Outside both, only `Enter` is offered.
 
+Both take the same two steps: open a pane running a shell, then type `ssh …` into it. The pane therefore stays open when the connection ends rather than closing with it, and the command sits in that shell's history, ready to re-run with `↑`. The receiving shell re-splits whatever arrives, so `ssha` quotes each word itself and a host with a space in its name survives. tmux needs one extra thing: an explicit `-c` to open the pane in the current directory, which Zellij inherits on its own.
+
 Tab completion for `ssha` is wired to the same host list.
 
 ## ⌨️ Aliases

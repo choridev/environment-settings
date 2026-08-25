@@ -351,48 +351,80 @@ _pick_host() {
   printf '%s\n%s\n' "$key" "$chosen"
 }
 
+# Every path below opens a pane running a shell and types the command into it,
+# rather than launching ssh as the pane's own process: the pane survives the
+# disconnect, and the command stays in that shell's history. The receiving shell
+# re-splits what arrives, so each word is quoted here.
+_ssha_cmdline() {
+  local -a cmd=(ssh "$@")
+  print -r -- "${(q)cmd[@]}"
+}
+
+# Both report the new pane on stdout, so no id means the pane was never made.
+# Connect here rather than type into a pane that may be the one you sit in.
+_ssha_no_pane() {
+  echo "$1: could not read the new pane's id; connecting here instead" >&2
+  ssh "${@:2}"
+}
+
+_ssha_type_tmux() {
+  local pane=$1; shift
+  [[ -n "$pane" ]] || { _ssha_no_pane tmux "$@"; return }
+  tmux send-keys -t "$pane" "$(_ssha_cmdline "$@")" C-m
+}
+
+# 'new-tab' reports a tab id, not a pane id, so that path passes 'focused' — the
+# pane the new tab just opened.
+_ssha_type_zellij() {
+  local pane=$1; shift
+  [[ -n "$pane" ]] || { _ssha_no_pane zellij "$@"; return }
+  local -a opt
+  [[ $pane == focused ]] || opt=(--pane-id "$pane")
+  zellij action write-chars "${opt[@]}" "$(_ssha_cmdline "$@")"
+  zellij action write "${opt[@]}" 13
+}
+
 _ssha_connect() {
   local key="$1" host="$2"
   shift 2
 
-  # Zellij is checked first so that a Zellij session running inside Tmux —
-  # which happens on a machine reached before the .zshrc guard was in place —
-  # splits the pane you are actually looking at.
+  # Zellij is checked first so that a Zellij session running inside Tmux splits
+  # the pane you are actually looking at.
   #
-  # The Zellij calls pass argv straight through after '--'. The Tmux ones build
-  # a string that a shell re-splits, so a host or argument containing a space
-  # survives on the Zellij path and not on the Tmux one.
+  # Tmux needs '-c' — unlike Zellij it opens the pane in the session's directory
+  # rather than this pane's.
   case "$key" in
     ctrl-s)
       if [[ -n "$ZELLIJ" ]]; then
         echo "-> zellij pane below: ssh $host $*"
-        zellij action new-pane -d down -- ssh "$host" "$@"
+        _ssha_type_zellij "$(zellij action new-pane -d down)" "$host" "$@"
         return
       elif [[ -n "$TMUX" ]]; then
         echo "-> tmux split horizontal: ssh $host $*"
-        tmux split-window "ssh $host $*"
+        _ssha_type_tmux "$(tmux split-window -c '#{pane_current_path}' -P -F '#{pane_id}')" "$host" "$@"
         return
       fi
       ;;
     ctrl-o)
       if [[ -n "$ZELLIJ" ]]; then
         echo "-> zellij pane right: ssh $host $*"
-        zellij action new-pane -d right -- ssh "$host" "$@"
+        _ssha_type_zellij "$(zellij action new-pane -d right)" "$host" "$@"
         return
       elif [[ -n "$TMUX" ]]; then
         echo "-> tmux split vertical: ssh $host $*"
-        tmux split-window -h "ssh $host $*"
+        _ssha_type_tmux "$(tmux split-window -h -c '#{pane_current_path}' -P -F '#{pane_id}')" "$host" "$@"
         return
       fi
       ;;
     ctrl-n)
       if [[ -n "$ZELLIJ" ]]; then
         echo "-> zellij tab: ssh $host $*"
-        zellij action new-tab -n "$host" -- ssh "$host" "$@"
+        zellij action new-tab -n "$host" >/dev/null
+        _ssha_type_zellij focused "$host" "$@"
         return
       elif [[ -n "$TMUX" ]]; then
         echo "-> tmux window: ssh $host $*"
-        tmux new-window -n "$host" "ssh $host $*"
+        _ssha_type_tmux "$(tmux new-window -n "$host" -c '#{pane_current_path}' -P -F '#{pane_id}')" "$host" "$@"
         return
       fi
       ;;
