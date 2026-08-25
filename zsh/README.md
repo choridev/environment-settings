@@ -119,11 +119,13 @@ Reachability is probed with `ssh-keyscan` in the background and cached for a day
 - `Enter`: Connect in the current shell.
 - `Ctrl + s`: Open the connection in a new pane below. *(inside a multiplexer only)*
 - `Ctrl + o`: Open the connection in a new pane to the right. *(inside a multiplexer only)*
-- `Ctrl + n`: Open the connection in a new window (tmux) or tab (Zellij) named after the host. *(inside a multiplexer only)*
+- `Ctrl + n`: Open the connection in a new window (tmux) or tab (Zellij, Herdr) named after the host. *(inside a multiplexer only)*
 
-These three work in both Zellij and tmux; the picker checks `$ZELLIJ` first, so a Zellij session running inside tmux splits the pane you are actually looking at. Outside both, only `Enter` is offered.
+These three work in Zellij, tmux and Herdr. The picker checks `$ZELLIJ` first, so a Zellij session running inside tmux splits the pane you are actually looking at, and `$HERDR_ENV` last, because locally Herdr is the outer multiplexer that spawns the shells — when another one is also set, the session in front of you is the one nested inside a Herdr pane. Outside all three, only `Enter` is offered.
 
-Both take the same two steps: open a pane running a shell, then type `ssh …` into it. The pane therefore stays open when the connection ends rather than closing with it, and the command sits in that shell's history, ready to re-run with `↑`. The receiving shell re-splits whatever arrives, so `ssha` quotes each word itself and a host with a space in its name survives. tmux needs one extra thing: an explicit `-c` to open the pane in the current directory, which Zellij inherits on its own.
+All three take the same two steps: open a pane running a shell, then type `ssh …` into it. The pane therefore stays open when the connection ends rather than closing with it, and the command sits in that shell's history, ready to re-run with `↑`. The receiving shell re-splits whatever arrives, so `ssha` quotes each word itself and a host with a space in its name survives.
+
+They differ only in the details. tmux and Zellij print the new pane's id; Herdr answers with JSON, so its `pane_id` is read out of the reply. tmux needs an explicit `-c` to open the pane in the current directory — the other two inherit it. Herdr needs an explicit `pane focus`, since it leaves the new pane unfocused where the other two hand it over.
 
 Tab completion for `ssha` is wired to the same host list.
 

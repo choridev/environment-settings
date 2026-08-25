@@ -304,10 +304,11 @@ _pick_host() {
     )
 
     local use_expect=0
-    if [[ -n "$TMUX" || -n "$ZELLIJ" ]]; then
-      # Zellij calls it a tab, Tmux a window; the key is the same either way.
+    if [[ -n "$TMUX" || -n "$ZELLIJ" || -n "$HERDR_ENV" ]]; then
+      # Zellij and Herdr call it a tab, Tmux a window; the key is the same
+      # either way.
       local hdr=$'\033[2mENTER:connect | ctrl-s:split ─ | ctrl-o:split │ | ctrl-n:new window\033[0m'
-      [[ -n "$ZELLIJ" ]] && hdr=$'\033[2mENTER:connect | ctrl-s:split ─ | ctrl-o:split │ | ctrl-n:new tab\033[0m'
+      [[ -n "$ZELLIJ" || -n "$HERDR_ENV" ]] && hdr=$'\033[2mENTER:connect | ctrl-s:split ─ | ctrl-o:split │ | ctrl-n:new tab\033[0m'
       fzf_opts+=(
         --header="$hdr"
         --expect='ctrl-s,ctrl-o,ctrl-n'
@@ -360,8 +361,14 @@ _ssha_cmdline() {
   print -r -- "${(q)cmd[@]}"
 }
 
-# Both report the new pane on stdout, so no id means the pane was never made.
-# Connect here rather than type into a pane that may be the one you sit in.
+# Tmux and Zellij report the new pane on stdout; Herdr answers with JSON, whose
+# only "pane_id" is the new pane's.
+_ssha_herdr_pane_id() {
+  grep -o '"pane_id":"[^"]*"' | head -1 | sed 's/.*:"//;s/"$//'
+}
+
+# No id means the pane was never made. Connect here rather than type into a pane
+# that may turn out to be the one you are sitting in.
 _ssha_no_pane() {
   echo "$1: could not read the new pane's id; connecting here instead" >&2
   ssh "${@:2}"
@@ -384,15 +391,31 @@ _ssha_type_zellij() {
   zellij action write "${opt[@]}" 13
 }
 
+_ssha_type_herdr() {
+  local pane=$1; shift
+  [[ -n "$pane" ]] || { _ssha_no_pane herdr "$@"; return }
+  herdr pane run "$pane" "$(_ssha_cmdline "$@")" >/dev/null
+}
+
+# Herdr leaves the new pane unfocused where the other two hand it over. Right
+# after a split, the neighbour in that direction is the pane just made.
+_ssha_herdr_split() {
+  local direction=$1; shift
+  local pane
+  pane=$(herdr pane split "$HERDR_PANE_ID" --direction "$direction" | _ssha_herdr_pane_id)
+  _ssha_type_herdr "$pane" "$@"
+  [[ -n "$pane" ]] && herdr pane focus --pane "$HERDR_PANE_ID" --direction "$direction" >/dev/null
+}
+
 _ssha_connect() {
   local key="$1" host="$2"
   shift 2
 
-  # Zellij is checked first so that a Zellij session running inside Tmux splits
-  # the pane you are actually looking at.
+  # Order is innermost-first: Zellij nests inside Tmux, and both nest inside
+  # Herdr, so the marker checked first is the session you are looking at.
   #
-  # Tmux needs '-c' — unlike Zellij it opens the pane in the session's directory
-  # rather than this pane's.
+  # Tmux alone needs '-c' — it opens the pane in the session's directory rather
+  # than this pane's.
   case "$key" in
     ctrl-s)
       if [[ -n "$ZELLIJ" ]]; then
@@ -402,6 +425,10 @@ _ssha_connect() {
       elif [[ -n "$TMUX" ]]; then
         echo "-> tmux split horizontal: ssh $host $*"
         _ssha_type_tmux "$(tmux split-window -c '#{pane_current_path}' -P -F '#{pane_id}')" "$host" "$@"
+        return
+      elif [[ -n "$HERDR_ENV" ]]; then
+        echo "-> herdr pane below: ssh $host $*"
+        _ssha_herdr_split down "$host" "$@"
         return
       fi
       ;;
@@ -414,6 +441,10 @@ _ssha_connect() {
         echo "-> tmux split vertical: ssh $host $*"
         _ssha_type_tmux "$(tmux split-window -h -c '#{pane_current_path}' -P -F '#{pane_id}')" "$host" "$@"
         return
+      elif [[ -n "$HERDR_ENV" ]]; then
+        echo "-> herdr pane right: ssh $host $*"
+        _ssha_herdr_split right "$host" "$@"
+        return
       fi
       ;;
     ctrl-n)
@@ -425,6 +456,10 @@ _ssha_connect() {
       elif [[ -n "$TMUX" ]]; then
         echo "-> tmux window: ssh $host $*"
         _ssha_type_tmux "$(tmux new-window -n "$host" -c '#{pane_current_path}' -P -F '#{pane_id}')" "$host" "$@"
+        return
+      elif [[ -n "$HERDR_ENV" ]]; then
+        echo "-> herdr tab: ssh $host $*"
+        _ssha_type_herdr "$(herdr tab create --focus --label "$host" | _ssha_herdr_pane_id)" "$host" "$@"
         return
       fi
       ;;
