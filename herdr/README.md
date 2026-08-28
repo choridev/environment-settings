@@ -2,7 +2,7 @@
 
 A [Herdr](https://herdr.dev) configuration (`config.toml`) keyed to match the Tmux setup in this repository, so the same fingers work in both.
 
-Herdr is a terminal workspace manager built around AI coding agents. Unlike Zellij it is already prefix-driven, so porting the Tmux keymap is a matter of renaming keys rather than rebuilding a mode machine.
+Herdr is a terminal workspace manager built around AI coding agents. It is prefix-driven like Tmux, so porting the Tmux keymap is a matter of renaming keys rather than rebuilding it around modes.
 
 ## 🚀 Installation (Automated)
 
@@ -35,7 +35,7 @@ chmod +x install.sh
 
 ## ✨ Features & Settings
 
-- **Tmux Prefix**: `Ctrl + t`, replacing Herdr's own `Ctrl + b`, matching [`../tmux`](../tmux) and [`../zellij`](../zellij).
+- **Tmux Prefix**: `Ctrl + t`, replacing Herdr's own `Ctrl + b`, matching [`../tmux`](../tmux).
 - **Theme Follows the Terminal**: `auto_switch` with `catppuccin-latte` for light and `catppuccin` for dark, so the colours track the host terminal instead of being pinned to one.
 - **Onboarding Off**: `onboarding = false` skips the first-run walkthrough.
 - **50 MB of Scrollback**: `scrollback_limit_bytes`, 5x the default. The limit is bytes, not lines, and a row costs its full pane width — about 9 bytes a cell — so lines ≈ limit / (columns × 9) however short the lines are. A full-width pane here is 268 columns: ~4,150 lines on the default, ~20,700 at 50 MB. Two things it does not do: a pane keeps the limit it was born with, so `herdr server reload-config` reaches only panes opened afterwards, and rows belonging to the alternate screen — pagers, editors, TUI agents — never enter the scrollback at any size.
@@ -62,12 +62,14 @@ Press **`Ctrl + t`** first, then:
 > Herdr binds `close_pane` to `prefix+x` and `close_tab` to `prefix+shift+x`, and both take effect immediately. Both are emptied here. Tmux wraps its `x` and `&` in `confirm-before`; Herdr's only confirmation setting is `ui.confirm_close`, which by its own description covers closing a *workspace*, not a pane or a tab. Exit the shell to close a pane; closing the last pane in a tab closes the tab.
 
 > [!NOTE]
-> `{` and `}` are `swap_pane_left` / `swap_pane_right`, not an exact port: Tmux's `swap-pane -U` / `-D` walk the pane order, while Herdr swaps with whatever sits in a given direction. In a plain row or column the two agree; in a nested layout they can differ. `swap_pane_up` and `swap_pane_down` exist too, left unbound to match the `.tmux.conf`'s pair.
+> `{` and `}` are `swap_pane_left` / `swap_pane_right`, not an exact port: Tmux's `swap-pane -U` / `-D` walk the pane order, while Herdr swaps with whatever sits in a given direction. In a plain row or column the two agree; in a nested layout they can differ. Only the horizontal pair is moved; `swap_pane_up` and `swap_pane_down` stay on their `prefix+shift+k` / `prefix+shift+j` defaults, so vertical swapping is there without a `.tmux.conf` counterpart.
 
 > [!IMPORTANT]
-> **`herdr --default-config` is not the whole list of settable keys, and neither is the keyboard page.** `copy_mode` and `swap_pane_*` are absent from both, and an action accepts a TOML array of keys — `focus_pane_left = ["prefix+h", "prefix+left"]` — which is documented nowhere. All three were first written up here as things Herdr could not do.
+> **`herdr --default-config` is not the whole list of settable keys, and `--help` is not the whole list of CLI flags.** `copy_mode`, `swap_pane_*` and `advanced.scrollback_limit_bytes` are all missing from that output, and `pane split --focus` is missing from its `--help`. Earlier revisions of this file recorded the first three as things Herdr could not do at all.
 >
-> `herdr config check` is the way to settle it: it answers `unknown config key keys.<name>` for a name the binary does not know, `invalid keybinding` for a value it cannot parse — naming the offending key even inside an array — and `config: ok` otherwise. Point it at a throwaway config with `HOME=/tmp/probe herdr config check` to try a name without touching this file.
+> The authoritative list is the [Config reference](https://herdr.dev/docs/config-reference/), which has every one of those keys with its default; array values — `next_tab = ["prefix+n", "ctrl+alt+]"]` — are on the [Configuration](https://herdr.dev/docs/configuration/) page. Read those before concluding a setting does not exist.
+>
+> `herdr config check` settles a name locally: `unknown config key keys.<name>` for one the binary does not know, `invalid keybinding` for a value it cannot parse — naming the offending key even inside an array — and `config: ok` otherwise. `HOME=/tmp/probe herdr config check` tries a name without touching this file. It compares explicit bindings against each other only: a key that collides with some *other* action's default passes as `ok`.
 
 ### Tabs
 
@@ -77,7 +79,7 @@ A Herdr **tab** is what Tmux calls a **window**.
 - `,`: Rename the current tab.
 - `<` / `>`: Move the current tab left or right along the tab bar.
 
-`c`, `n`, `p` and `1`–`9` are already Herdr's defaults and match Tmux as they stand. Herdr has no sub-modes competing for those letters, so `p` means *previous tab* here — something the Zellij port could not manage, since Zellij spends `p` on entering pane mode.
+`c`, `n`, `p` and `1`–`9` are already Herdr's defaults and match Tmux as they stand. Herdr has no sub-modes competing for those letters, so `p` means *previous tab* here rather than being spent on entering a mode.
 
 ### Agents
 

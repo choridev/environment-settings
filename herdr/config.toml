@@ -13,8 +13,8 @@ dark_name = "catppuccin"
 
 [keys]
 # Prefix: 'Ctrl+t', the same key the .tmux.conf uses, in place of Herdr's own
-# 'ctrl+b'. Herdr is already prefix-driven, so unlike Zellij there is no mode
-# machinery to build — the prefix is a real prefix.
+# 'ctrl+b'. Herdr is prefix-driven like Tmux, so the prefix is a real prefix and
+# porting the keymap is renaming keys rather than building modes.
 prefix = "ctrl+t"
 
 # ---------------------------------------------------------------------------
@@ -56,9 +56,9 @@ close_tab = ""
 # which the pane cycling above already uses, so it moves onto 'v' — free because
 # split_vertical went to the backslash.
 #
-# 'copy_mode' appears in neither `herdr --default-config` nor the keyboard docs,
-# but the binary knows it: `herdr config check` rejects copy_mode_key and
-# enter_copy_mode as unknown, accepts copy_mode, and validates its value.
+# 'copy_mode' is missing from `herdr --default-config` and from the keyboard
+# page, which is why it read as absent at first; herdr.dev/docs/config-reference
+# lists it with this same prefix+[ default.
 copy_mode = "prefix+v"
 
 # The whole scrollback in $EDITOR, which copy mode is not: searchable, saveable
@@ -82,8 +82,8 @@ focus_pane_right = ["prefix+l", "prefix+right"]
 #
 # new_tab, next_tab, previous_tab and switch_tab already match Tmux and are
 # left at their defaults: prefix+c, prefix+n, prefix+p and prefix+1..9. Herdr
-# has no sub-modes competing for those letters, so 'p' means previous tab here,
-# which the Zellij port could not manage.
+# has no sub-modes competing for those letters, so 'p' means previous tab here
+# rather than being spent on entering a mode.
 rename_tab = "prefix+,"
 
 # '<' and '>' move the tab along the tab bar. Not a Tmux binding — Tmux spends
@@ -149,8 +149,9 @@ focus_agent = "prefix+ctrl+1..9"
 # ---------------------------------------------------------------------------
 #
 # swap_pane_* is missing from `herdr --default-config` the same way copy_mode is,
-# but the binary validates it. up and down exist too, left unbound to match the
-# .tmux.conf's pair.
+# and listed in the Config reference the same way too. Only the horizontal pair
+# is moved here; up and down keep their prefix+shift+k / prefix+shift+j defaults,
+# which nothing else in this file claims.
 #
 # Not an exact port: Tmux's swap-pane -U/-D walk the pane order, while Herdr
 # swaps with whatever sits in a given direction. With a plain row or column the
@@ -172,7 +173,8 @@ swap_pane_right = "prefix+}"
 #
 # A pane keeps the limit it was born with: after `herdr server reload-config` an
 # existing pane still honours the old value, so only panes opened afterwards get
-# a change. Nothing here helps with programs on the alternate screen — pagers,
+# a change. Measured here — the Config reference documents the per-pane limit but
+# not when a change lands. Nothing here helps with programs on the alternate screen — pagers,
 # editors, TUI agents — whose rows never enter the scrollback at all.
 [advanced]
 scrollback_limit_bytes = 50000000
