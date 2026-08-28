@@ -81,14 +81,14 @@ Three settings have to agree for this to work, and dropping any one of them quie
 The trailing `r:|?=**` matcher is a fuzzy fallback that only runs when nothing else matched. It matches non-contiguously, so a query like `osmo` also pulls in `cosmos` — the picker is there to choose between them.
 
 ### Automatic Multiplexer
-When the session is interactive, arrives over SSH, and is not already inside a multiplexer, the shell attaches to one. [Zellij](../zellij) is used where it is installed, and [tmux](../tmux) otherwise. Local shells are left alone.
+When the session is interactive, arrives over SSH, and is not already inside a multiplexer, the shell attaches to one. [Herdr](../herdr) is used where it is installed, and [tmux](../tmux) otherwise. Local shells are left alone.
 
-Zellij attaches to a session named after the short hostname, creating it if needed — it has no equivalent of tmux's `-n` for naming the first tab, but it shows the session name in the status bar, so that is where the hostname goes. Tmux keeps the session named `main` with its window named after the hostname.
+Plain `herdr` attaches to the persistent session it names `default`; passing `--session` with the hostname would fragment that into a second one. Tmux keeps the session named `main` with its window named after the hostname.
 
 > [!NOTE]
-> The guard checks that **all three** of `$TMUX`, `$ZELLIJ` and `$HERDR_ENV` are empty. Each multiplexer sets only its own variable, so any single test lets the other two nest inside it.
+> The guard checks that **both** `$HERDR_ENV` and `$TMUX` are empty. Each multiplexer sets only its own variable, so testing `$TMUX` alone would start Herdr inside every tmux pane.
 
-[Herdr](../herdr) is the reason the third test exists. A Herdr pane inherits `SSH_TTY` from the login shell and sets neither `$TMUX` nor `$ZELLIJ`, so while the guard checked only those two, starting Herdr — or splitting a pane inside it — opened Zellij within the new pane. `$HERDR_ENV` is Herdr's own marker for running inside Herdr; its agent skill file tests the same variable the same way.
+`$HERDR_ENV` is Herdr's own marker for running inside Herdr, and its agent skill file tests it the same way. It is the test that matters most here: a Herdr pane inherits `SSH_TTY` from the login shell, so without it every new pane — and every split — would open another Herdr inside itself.
 
 ### Persistent SSH agent
 The shell keeps one agent alive across every session by caching its environment in `~/.ssh-agent-info`, and only spawns a new agent when the cached one cannot be reached. It deliberately never runs `ssh-add`: key loading is left to `AddKeysToAgent yes` in `~/.ssh/config`, which adds a key to the agent the first time it is actually used. See the [`ssh`](../ssh) directory for that side of the setup.
@@ -119,13 +119,13 @@ Reachability is probed with `ssh-keyscan` in the background and cached for a day
 - `Enter`: Connect in the current shell.
 - `Ctrl + s`: Open the connection in a new pane below. *(inside a multiplexer only)*
 - `Ctrl + o`: Open the connection in a new pane to the right. *(inside a multiplexer only)*
-- `Ctrl + n`: Open the connection in a new window (tmux) or tab (Zellij, Herdr) named after the host. *(inside a multiplexer only)*
+- `Ctrl + n`: Open the connection in a new window (tmux) or tab (Herdr) named after the host. *(inside a multiplexer only)*
 
-These three work in Zellij, tmux and Herdr. The picker checks `$ZELLIJ` first, so a Zellij session running inside tmux splits the pane you are actually looking at, and `$HERDR_ENV` last, because locally Herdr is the outer multiplexer that spawns the shells — when another one is also set, the session in front of you is the one nested inside a Herdr pane. Outside all three, only `Enter` is offered.
+These three work in both tmux and Herdr. `$TMUX` is checked first, because locally Herdr is the outer multiplexer that spawns the shells — when both markers are set, the session in front of you is the tmux one nested inside a Herdr pane. Outside both, only `Enter` is offered.
 
 All three take the same two steps: open a pane running a shell, then type `ssh …` into it. The pane therefore stays open when the connection ends rather than closing with it, and the command sits in that shell's history, ready to re-run with `↑`. The receiving shell re-splits whatever arrives, so `ssha` quotes each word itself and a host with a space in its name survives.
 
-They differ only in the details. tmux and Zellij print the new pane's id; Herdr answers with JSON, so its `pane_id` is read out of the reply. tmux needs an explicit `-c` to open the pane in the current directory — the other two inherit it. Herdr needs an explicit `pane focus`, since it leaves the new pane unfocused where the other two hand it over.
+They differ in the details. tmux prints the new pane's id; Herdr answers with JSON, so its `pane_id` is read out of the reply. tmux needs an explicit `-c` to open the pane in the current directory, which Herdr inherits on its own, and Herdr needs an explicit `pane focus`, since it leaves the new pane unfocused where tmux hands it over.
 
 Tab completion for `ssha` is wired to the same host list.
 
@@ -134,7 +134,6 @@ Tab completion for `ssha` is wired to the same host list.
 - `l` / `ll`: `ls -F` / `ls -alFh`
 - `vi`: Open `nvim`
 - `tm`: `tmux`
-- `zj`: `zellij`
 - `sa`: `ssha`
 - `g`: `git`
 - `cl`: `clear`

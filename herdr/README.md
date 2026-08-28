@@ -2,7 +2,7 @@
 
 A [Herdr](https://herdr.dev) configuration (`config.toml`) keyed to match the Tmux setup in this repository, so the same fingers work in both.
 
-Herdr is a terminal workspace manager built around AI coding agents. Unlike Zellij it is already prefix-driven, so porting the Tmux keymap is a matter of renaming keys rather than rebuilding a mode machine.
+Herdr is a terminal workspace manager built around AI coding agents. It is prefix-driven like Tmux, so porting the Tmux keymap is a matter of renaming keys rather than rebuilding it around modes.
 
 ## 🚀 Installation (Automated)
 
@@ -35,7 +35,7 @@ chmod +x install.sh
 
 ## ✨ Features & Settings
 
-- **Tmux Prefix**: `Ctrl + t`, replacing Herdr's own `Ctrl + b`, matching [`../tmux`](../tmux) and [`../zellij`](../zellij).
+- **Tmux Prefix**: `Ctrl + t`, replacing Herdr's own `Ctrl + b`, matching [`../tmux`](../tmux).
 - **Theme Follows the Terminal**: `auto_switch` with `catppuccin-latte` for light and `catppuccin` for dark, so the colours track the host terminal instead of being pinned to one.
 - **Onboarding Off**: `onboarding = false` skips the first-run walkthrough.
 - **50 MB of Scrollback**: `scrollback_limit_bytes`, 5x the default. The limit is bytes, not lines, and a row costs its full pane width — about 9 bytes a cell — so lines ≈ limit / (columns × 9) however short the lines are. A full-width pane here is 268 columns: ~4,150 lines on the default, ~20,700 at 50 MB. Two things it does not do: a pane keeps the limit it was born with, so `herdr server reload-config` reaches only panes opened afterwards, and rows belonging to the alternate screen — pagers, editors, TUI agents — never enter the scrollback at any size.
@@ -79,7 +79,7 @@ A Herdr **tab** is what Tmux calls a **window**.
 - `,`: Rename the current tab.
 - `<` / `>`: Move the current tab left or right along the tab bar.
 
-`c`, `n`, `p` and `1`–`9` are already Herdr's defaults and match Tmux as they stand. Herdr has no sub-modes competing for those letters, so `p` means *previous tab* here — something the Zellij port could not manage, since Zellij spends `p` on entering pane mode.
+`c`, `n`, `p` and `1`–`9` are already Herdr's defaults and match Tmux as they stand. Herdr has no sub-modes competing for those letters, so `p` means *previous tab* here rather than being spent on entering a mode.
 
 ### Agents
 

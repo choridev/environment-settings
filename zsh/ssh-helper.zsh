@@ -304,11 +304,10 @@ _pick_host() {
     )
 
     local use_expect=0
-    if [[ -n "$TMUX" || -n "$ZELLIJ" || -n "$HERDR_ENV" ]]; then
-      # Zellij and Herdr call it a tab, Tmux a window; the key is the same
-      # either way.
+    if [[ -n "$TMUX" || -n "$HERDR_ENV" ]]; then
+      # Herdr calls it a tab, Tmux a window; the key is the same either way.
       local hdr=$'\033[2mENTER:connect | ctrl-s:split ─ | ctrl-o:split │ | ctrl-n:new window\033[0m'
-      [[ -n "$ZELLIJ" || -n "$HERDR_ENV" ]] && hdr=$'\033[2mENTER:connect | ctrl-s:split ─ | ctrl-o:split │ | ctrl-n:new tab\033[0m'
+      [[ -n "$HERDR_ENV" ]] && hdr=$'\033[2mENTER:connect | ctrl-s:split ─ | ctrl-o:split │ | ctrl-n:new tab\033[0m'
       fzf_opts+=(
         --header="$hdr"
         --expect='ctrl-s,ctrl-o,ctrl-n'
@@ -361,8 +360,8 @@ _ssha_cmdline() {
   print -r -- "${(q)cmd[@]}"
 }
 
-# Tmux and Zellij report the new pane on stdout; Herdr answers with JSON, whose
-# only "pane_id" is the new pane's.
+# Tmux reports the new pane on stdout; Herdr answers with JSON, whose only
+# "pane_id" is the new pane's.
 _ssha_herdr_pane_id() {
   grep -o '"pane_id":"[^"]*"' | head -1 | sed 's/.*:"//;s/"$//'
 }
@@ -378,17 +377,6 @@ _ssha_type_tmux() {
   local pane=$1; shift
   [[ -n "$pane" ]] || { _ssha_no_pane tmux "$@"; return }
   tmux send-keys -t "$pane" "$(_ssha_cmdline "$@")" C-m
-}
-
-# 'new-tab' reports a tab id, not a pane id, so that path passes 'focused' — the
-# pane the new tab just opened.
-_ssha_type_zellij() {
-  local pane=$1; shift
-  [[ -n "$pane" ]] || { _ssha_no_pane zellij "$@"; return }
-  local -a opt
-  [[ $pane == focused ]] || opt=(--pane-id "$pane")
-  zellij action write-chars "${opt[@]}" "$(_ssha_cmdline "$@")"
-  zellij action write "${opt[@]}" 13
 }
 
 _ssha_type_herdr() {
@@ -409,18 +397,15 @@ _ssha_connect() {
   local key="$1" host="$2"
   shift 2
 
-  # Order is innermost-first: Zellij nests inside Tmux, and both nest inside
-  # Herdr, so the marker checked first is the session you are looking at.
+  # Tmux is checked first: locally Herdr is the outer multiplexer that spawns the
+  # shells, so when both markers are set the session in front of you is the Tmux
+  # one nested inside a Herdr pane.
   #
   # Tmux alone needs '-c' — it opens the pane in the session's directory rather
   # than this pane's.
   case "$key" in
     ctrl-s)
-      if [[ -n "$ZELLIJ" ]]; then
-        echo "-> zellij pane below: ssh $host $*"
-        _ssha_type_zellij "$(zellij action new-pane -d down)" "$host" "$@"
-        return
-      elif [[ -n "$TMUX" ]]; then
+      if [[ -n "$TMUX" ]]; then
         echo "-> tmux split horizontal: ssh $host $*"
         _ssha_type_tmux "$(tmux split-window -c '#{pane_current_path}' -P -F '#{pane_id}')" "$host" "$@"
         return
@@ -431,11 +416,7 @@ _ssha_connect() {
       fi
       ;;
     ctrl-o)
-      if [[ -n "$ZELLIJ" ]]; then
-        echo "-> zellij pane right: ssh $host $*"
-        _ssha_type_zellij "$(zellij action new-pane -d right)" "$host" "$@"
-        return
-      elif [[ -n "$TMUX" ]]; then
+      if [[ -n "$TMUX" ]]; then
         echo "-> tmux split vertical: ssh $host $*"
         _ssha_type_tmux "$(tmux split-window -h -c '#{pane_current_path}' -P -F '#{pane_id}')" "$host" "$@"
         return
@@ -446,12 +427,7 @@ _ssha_connect() {
       fi
       ;;
     ctrl-n)
-      if [[ -n "$ZELLIJ" ]]; then
-        echo "-> zellij tab: ssh $host $*"
-        zellij action new-tab -n "$host" >/dev/null
-        _ssha_type_zellij focused "$host" "$@"
-        return
-      elif [[ -n "$TMUX" ]]; then
+      if [[ -n "$TMUX" ]]; then
         echo "-> tmux window: ssh $host $*"
         _ssha_type_tmux "$(tmux new-window -n "$host" -c '#{pane_current_path}' -P -F '#{pane_id}')" "$host" "$@"
         return

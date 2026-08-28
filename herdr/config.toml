@@ -13,8 +13,8 @@ dark_name = "catppuccin"
 
 [keys]
 # Prefix: 'Ctrl+t', the same key the .tmux.conf uses, in place of Herdr's own
-# 'ctrl+b'. Herdr is already prefix-driven, so unlike Zellij there is no mode
-# machinery to build — the prefix is a real prefix.
+# 'ctrl+b'. Herdr is prefix-driven like Tmux, so the prefix is a real prefix and
+# porting the keymap is renaming keys rather than building modes.
 prefix = "ctrl+t"
 
 # ---------------------------------------------------------------------------
@@ -82,8 +82,8 @@ focus_pane_right = ["prefix+l", "prefix+right"]
 #
 # new_tab, next_tab, previous_tab and switch_tab already match Tmux and are
 # left at their defaults: prefix+c, prefix+n, prefix+p and prefix+1..9. Herdr
-# has no sub-modes competing for those letters, so 'p' means previous tab here,
-# which the Zellij port could not manage.
+# has no sub-modes competing for those letters, so 'p' means previous tab here
+# rather than being spent on entering a mode.
 rename_tab = "prefix+,"
 
 # '<' and '>' move the tab along the tab bar. Not a Tmux binding — Tmux spends
