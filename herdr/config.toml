@@ -147,22 +147,15 @@ focus_agent = "prefix+ctrl+1..9"
 # Swapping panes, Tmux's '{' and '}'
 # ---------------------------------------------------------------------------
 #
-# Herdr has no keybinding action for this, but it does have `herdr pane swap`,
-# so a custom command stands in. type = "shell" runs it detached, which is what
-# a layout change wants — no pane opens and nothing waits.
+# swap_pane_* is missing from `herdr --default-config` the same way copy_mode is,
+# but the binary validates it. up and down exist too, left unbound to match the
+# .tmux.conf's pair.
 #
 # Not an exact port: Tmux's swap-pane -U/-D walk the pane order, while Herdr
 # swaps with whatever sits in a given direction. With a plain row or column the
 # two agree; in a nested layout they can differ.
-[[keys.command]]
-key = "prefix+{"
-type = "shell"
-command = "herdr pane swap --current --direction left"
-
-[[keys.command]]
-key = "prefix+}"
-type = "shell"
-command = "herdr pane swap --current --direction right"
+swap_pane_left = "prefix+{"
+swap_pane_right = "prefix+}"
 
 # ---------------------------------------------------------------------------
 # Arrow-key focus, Tmux's select-pane

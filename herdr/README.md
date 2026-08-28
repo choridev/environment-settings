@@ -64,7 +64,7 @@ Press **`Ctrl + t`** first, then:
 > `focus_pane_*` takes one key each, so `hjkl` holds the native bindings — Herdr's own default, and the Vim answer — and the arrow keys, which is what Tmux binds `select-pane` to, run `herdr pane focus` as custom commands instead. Same result either way; the arrows cost one process spawn per press.
 
 > [!NOTE]
-> `{` and `}` are not native actions — Herdr has no swap binding, so they run `herdr pane swap` as detached shell commands. Not an exact port: Tmux's `swap-pane -U` / `-D` walk the pane order, while Herdr swaps with whatever sits in a given direction. In a plain row or column the two agree; in a nested layout they can differ.
+> `{` and `}` are `swap_pane_left` / `swap_pane_right`, not an exact port: Tmux's `swap-pane -U` / `-D` walk the pane order, while Herdr swaps with whatever sits in a given direction. In a plain row or column the two agree; in a nested layout they can differ. `swap_pane_up` and `swap_pane_down` exist too, left unbound to match the `.tmux.conf`'s pair.
 
 ### Tabs
 
