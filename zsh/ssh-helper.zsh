@@ -397,14 +397,12 @@ _ssha_type_herdr() {
   herdr pane run "$pane" "$(_ssha_cmdline "$@")" >/dev/null
 }
 
-# Herdr leaves the new pane unfocused where the other two hand it over. Right
-# after a split, the neighbour in that direction is the pane just made.
+# '--focus' hands the new pane over the way Tmux does; without it Herdr leaves
+# the focus behind. It is in neither `herdr pane split --help` nor the socket API
+# docs, but the reply comes back with "focused":true.
 _ssha_herdr_split() {
   local direction=$1; shift
-  local pane
-  pane=$(herdr pane split "$HERDR_PANE_ID" --direction "$direction" | _ssha_herdr_pane_id)
-  _ssha_type_herdr "$pane" "$@"
-  [[ -n "$pane" ]] && herdr pane focus --pane "$HERDR_PANE_ID" --direction "$direction" >/dev/null
+  _ssha_type_herdr "$(herdr pane split "$HERDR_PANE_ID" --direction "$direction" --focus | _ssha_herdr_pane_id)" "$@"
 }
 
 _ssha_connect() {
