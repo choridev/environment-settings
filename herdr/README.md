@@ -38,6 +38,7 @@ chmod +x install.sh
 - **Tmux Prefix**: `Ctrl + t`, replacing Herdr's own `Ctrl + b`, matching [`../tmux`](../tmux) and [`../zellij`](../zellij).
 - **Theme Follows the Terminal**: `auto_switch` with `catppuccin-latte` for light and `catppuccin` for dark, so the colours track the host terminal instead of being pinned to one.
 - **Onboarding Off**: `onboarding = false` skips the first-run walkthrough.
+- **50 MB of Scrollback**: `scrollback_limit_bytes`, 5x the default. The limit is bytes, not lines, and a row costs its full pane width — about 9 bytes a cell — so lines ≈ limit / (columns × 9) however short the lines are. A full-width pane here is 268 columns: ~4,150 lines on the default, ~20,700 at 50 MB. Two things it does not do: a pane keeps the limit it was born with, so `herdr server reload-config` reaches only panes opened afterwards, and rows belonging to the alternate screen — pagers, editors, TUI agents — never enter the scrollback at any size.
 
 Everything else is left at Herdr's defaults. `herdr --default-config` prints the full reference, and `herdr config check` validates this file — it catches unknown keys, invalid key syntax, *and* two actions claiming the same chord.
 

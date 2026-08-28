@@ -157,3 +157,22 @@ focus_agent = "prefix+ctrl+1..9"
 # two agree; in a nested layout they can differ.
 swap_pane_left = "prefix+{"
 swap_pane_right = "prefix+}"
+
+# ---------------------------------------------------------------------------
+# Scrollback
+# ---------------------------------------------------------------------------
+#
+# 5x Herdr's 10 MB default. The limit is bytes, not lines, and a row costs its
+# full pane width — measured at ~9 bytes per cell, so lines ≈ limit / (cols * 9)
+# no matter how much text is actually on each one. At the 268 columns a full-
+# width pane gets here that is ~4,150 lines by default and ~20,700 at 50 MB.
+#
+# It applies per pane and grows with output rather than being reserved, but the
+# ceiling is what matters with a few dozen panes open.
+#
+# A pane keeps the limit it was born with: after `herdr server reload-config` an
+# existing pane still honours the old value, so only panes opened afterwards get
+# a change. Nothing here helps with programs on the alternate screen — pagers,
+# editors, TUI agents — whose rows never enter the scrollback at all.
+[advanced]
+scrollback_limit_bytes = 50000000
