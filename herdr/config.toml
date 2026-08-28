@@ -51,12 +51,19 @@ last_pane = "prefix+;"
 close_pane = ""
 close_tab = ""
 
-# Herdr has no copy mode and no keyboard selection, so the .tmux.conf's
-# 'bind v copy-mode' points at the nearest thing: the scrollback opened in
-# $EDITOR, where a real Vim visual selection and yank are available. 'v' is
-# free because split_vertical moved off it and onto the backslash above.
-# Herdr's default for this was prefix+e, now unbound.
-edit_scrollback = "prefix+v"
+# Tmux's 'bind v copy-mode'. Herdr's own copy mode: hjkl, w/b/e, '/' and '?' to
+# search, v or Space to select, y to copy, q to leave. Its default is prefix+[,
+# which the pane cycling above already uses, so it moves onto 'v' — free because
+# split_vertical went to the backslash.
+#
+# 'copy_mode' appears in neither `herdr --default-config` nor the keyboard docs,
+# but the binary knows it: `herdr config check` rejects copy_mode_key and
+# enter_copy_mode as unknown, accepts copy_mode, and validates its value.
+copy_mode = "prefix+v"
+
+# The whole scrollback in $EDITOR, which copy mode is not: searchable, saveable
+# and editable at length. Back on Herdr's own default key.
+edit_scrollback = "prefix+e"
 
 # hjkl, which is both Herdr's own default and the Vim answer. Tmux uses the
 # arrow keys for select-pane instead; those are bound too, further down, so

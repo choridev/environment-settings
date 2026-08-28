@@ -52,7 +52,8 @@ Press **`Ctrl + t`** first, then:
 - `[` / `]`: Previous / next pane.
 - `;`: Back to the pane you were on before this one.
 - `h` `j` `k` `l` or `←` `↓` `↑` `→`: Move focus in that direction. Both sets work.
-- `v`: Open the scrollback in `$EDITOR`.
+- `v`: Copy mode. `h` `j` `k` `l`, `w`/`b`/`e`, `{`/`}` and `PageUp`/`PageDown` to move, `/` or `?` to search and `n`/`N` to repeat, `v` or Space to select, `y` to copy, `q` to leave. Herdr's default is `[`, taken here by pane cycling.
+- `e`: Open the whole scrollback in `$EDITOR`.
 - `{` / `}`: Swap the focused pane with its neighbour to the left / right.
 - `z`: Zoom. `r`: Resize mode.
 
@@ -104,7 +105,6 @@ Herdr's defaults are the other way round: workspaces on the arrow keys, panes on
 ## 🔀 What Did Not Carry Over From Tmux
 
 - **Synchronised input.** No action for it. `herdr pane input` sets right-click routing, not input broadcast, so the `.tmux.conf`'s `i` has nothing to map onto.
-- **Copy mode.** There is no keyboard selection or yank in Herdr itself. `Ctrl + t` `v` is pointed at the nearest thing — the scrollback opened in `$EDITOR` — so the `.tmux.conf`'s `bind v copy-mode` habit still lands somewhere useful, and a real Vim visual selection and yank happen there. Herdr's own default for that was `prefix+e`, now unbound; `v` was free because `split_vertical` moved onto the backslash.
 - **Layout presets.** No `next-layout` action, so Tmux's `Space` has no home, and neither does `select-layout -E`.
 - **Break pane out to a window.** No action for Tmux's `!`.
 - **`x` and `&` confirmation.** Herdr closes panes and tabs without the `confirm-before` prompt Tmux wraps them in — `ui.confirm_close` covers only workspaces. So nothing here closes either one from the keyboard: `close_pane` and `close_tab` are both emptied, and `&` was never mapped. `prefix+shift+d` closes a workspace and does ask first.
