@@ -52,7 +52,8 @@ Press **`Ctrl + t`** first, then:
 - `[` / `]`: Previous / next pane.
 - `;`: Back to the pane you were on before this one.
 - `h` `j` `k` `l` or `←` `↓` `↑` `→`: Move focus in that direction. Both sets work.
-- `v`: Open the scrollback in `$EDITOR`.
+- `v`: Copy mode. `h` `j` `k` `l`, `w`/`b`/`e`, `{`/`}` and `PageUp`/`PageDown` to move, `/` or `?` to search and `n`/`N` to repeat, `v` or Space to select, `y` to copy, `q` to leave. Herdr's default is `[`, taken here by pane cycling.
+- `e`: Open the whole scrollback in `$EDITOR`.
 - `{` / `}`: Swap the focused pane with its neighbour to the left / right.
 - `z`: Zoom. `r`: Resize mode.
 
@@ -60,10 +61,12 @@ Press **`Ctrl + t`** first, then:
 > Herdr binds `close_pane` to `prefix+x` and `close_tab` to `prefix+shift+x`, and both take effect immediately. Both are emptied here. Tmux wraps its `x` and `&` in `confirm-before`; Herdr's only confirmation setting is `ui.confirm_close`, which by its own description covers closing a *workspace*, not a pane or a tab. Exit the shell to close a pane; closing the last pane in a tab closes the tab.
 
 > [!NOTE]
-> `focus_pane_*` takes one key each, so `hjkl` holds the native bindings — Herdr's own default, and the Vim answer — and the arrow keys, which is what Tmux binds `select-pane` to, run `herdr pane focus` as custom commands instead. Same result either way; the arrows cost one process spawn per press.
+> `{` and `}` are `swap_pane_left` / `swap_pane_right`, not an exact port: Tmux's `swap-pane -U` / `-D` walk the pane order, while Herdr swaps with whatever sits in a given direction. In a plain row or column the two agree; in a nested layout they can differ. `swap_pane_up` and `swap_pane_down` exist too, left unbound to match the `.tmux.conf`'s pair.
 
-> [!NOTE]
-> `{` and `}` are not native actions — Herdr has no swap binding, so they run `herdr pane swap` as detached shell commands. Not an exact port: Tmux's `swap-pane -U` / `-D` walk the pane order, while Herdr swaps with whatever sits in a given direction. In a plain row or column the two agree; in a nested layout they can differ.
+> [!IMPORTANT]
+> **`herdr --default-config` is not the whole list of settable keys, and neither is the keyboard page.** `copy_mode` and `swap_pane_*` are absent from both, and an action accepts a TOML array of keys — `focus_pane_left = ["prefix+h", "prefix+left"]` — which is documented nowhere. All three were first written up here as things Herdr could not do.
+>
+> `herdr config check` is the way to settle it: it answers `unknown config key keys.<name>` for a name the binary does not know, `invalid keybinding` for a value it cannot parse — naming the offending key even inside an array — and `config: ok` otherwise. Point it at a throwaway config with `HOME=/tmp/probe herdr config check` to try a name without touching this file.
 
 ### Tabs
 
@@ -104,7 +107,6 @@ Herdr's defaults are the other way round: workspaces on the arrow keys, panes on
 ## 🔀 What Did Not Carry Over From Tmux
 
 - **Synchronised input.** No action for it. `herdr pane input` sets right-click routing, not input broadcast, so the `.tmux.conf`'s `i` has nothing to map onto.
-- **Copy mode.** There is no keyboard selection or yank in Herdr itself. `Ctrl + t` `v` is pointed at the nearest thing — the scrollback opened in `$EDITOR` — so the `.tmux.conf`'s `bind v copy-mode` habit still lands somewhere useful, and a real Vim visual selection and yank happen there. Herdr's own default for that was `prefix+e`, now unbound; `v` was free because `split_vertical` moved onto the backslash.
 - **Layout presets.** No `next-layout` action, so Tmux's `Space` has no home, and neither does `select-layout -E`.
 - **Break pane out to a window.** No action for Tmux's `!`.
 - **`x` and `&` confirmation.** Herdr closes panes and tabs without the `confirm-before` prompt Tmux wraps them in — `ui.confirm_close` covers only workspaces. So nothing here closes either one from the keyboard: `close_pane` and `close_tab` are both emptied, and `&` was never mapped. `prefix+shift+d` closes a workspace and does ask first.
