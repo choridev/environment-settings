@@ -61,10 +61,12 @@ Press **`Ctrl + t`** first, then:
 > Herdr binds `close_pane` to `prefix+x` and `close_tab` to `prefix+shift+x`, and both take effect immediately. Both are emptied here. Tmux wraps its `x` and `&` in `confirm-before`; Herdr's only confirmation setting is `ui.confirm_close`, which by its own description covers closing a *workspace*, not a pane or a tab. Exit the shell to close a pane; closing the last pane in a tab closes the tab.
 
 > [!NOTE]
-> `focus_pane_*` takes one key each, so `hjkl` holds the native bindings — Herdr's own default, and the Vim answer — and the arrow keys, which is what Tmux binds `select-pane` to, run `herdr pane focus` as custom commands instead. Same result either way; the arrows cost one process spawn per press.
-
-> [!NOTE]
 > `{` and `}` are `swap_pane_left` / `swap_pane_right`, not an exact port: Tmux's `swap-pane -U` / `-D` walk the pane order, while Herdr swaps with whatever sits in a given direction. In a plain row or column the two agree; in a nested layout they can differ. `swap_pane_up` and `swap_pane_down` exist too, left unbound to match the `.tmux.conf`'s pair.
+
+> [!IMPORTANT]
+> **`herdr --default-config` is not the whole list of settable keys, and neither is the keyboard page.** `copy_mode` and `swap_pane_*` are absent from both, and an action accepts a TOML array of keys — `focus_pane_left = ["prefix+h", "prefix+left"]` — which is documented nowhere. All three were first written up here as things Herdr could not do.
+>
+> `herdr config check` is the way to settle it: it answers `unknown config key keys.<name>` for a name the binary does not know, `invalid keybinding` for a value it cannot parse — naming the offending key even inside an array — and `config: ok` otherwise. Point it at a throwaway config with `HOME=/tmp/probe herdr config check` to try a name without touching this file.
 
 ### Tabs
 
