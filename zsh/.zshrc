@@ -35,6 +35,19 @@ else
 fi
 
 # Completion
+# Herdr ships a #compdef file to drop in fpath, not something to eval, and it
+# self-updates — so regenerate whenever the binary is newer. Both lines have to
+# come before compinit, which picks up a new file even with a warm .zcompdump.
+if _herdr_bin=$(command -v herdr 2>/dev/null); then
+    _zsh_comp="$HOME/.zsh/completions"
+    mkdir -p "$_zsh_comp"
+    [[ "$_zsh_comp/_herdr" -nt "$_herdr_bin" ]] \
+        || herdr completion zsh > "$_zsh_comp/_herdr"
+    fpath=("$_zsh_comp" $fpath)
+    unset _zsh_comp
+fi
+unset _herdr_bin
+
 autoload -Uz compinit && compinit
 # 'menu yes' + menu_complete keeps fzf-tab from being skipped when the matches
 # share a common prefix: without them Zsh inserts the prefix and never opens fzf.

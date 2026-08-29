@@ -54,7 +54,7 @@ chsh -s "$(command -v zsh)"
 
 ### Shell
 - **Prompt**: **[Starship](https://starship.rs)**, configured in `starship.toml` — the hostname appears only over SSH, and the prompt shows the git branch, a compact git status, the UTC time, and how long the last command took.
-- **Completion**: `compinit` with substring matching and an fzf picker on Tab — see [Completion](#-completion) below.
+- **Completion**: `compinit` with substring matching and an fzf picker on Tab, plus Herdr's own completions regenerated whenever its binary changes — see [Completion](#-completion) below.
 - **History**: 100,000 entries, appended immediately so parallel shells do not clobber each other. Commands typed with a leading space are not recorded. **Up** and **Down** search for history entries that start with whatever is already on the line, so typing `ansi` and pressing Up walks through past `ansible-playbook …` commands instead of the last thing you ran. On an empty line they behave like plain history navigation, and inside a multi-line command they move between its lines first.
 - **Plugins**: **[fzf-tab](https://github.com/Aloxaf/fzf-tab)**, **[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)** and **[zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)**. Every plugin is sourced through a guard, so a missing file degrades the shell gracefully instead of erroring on every startup.
 - **Node**: `nvm` is loaded when `~/.nvm` is present. Note that sourcing `nvm.sh` dominates shell startup time.
@@ -79,6 +79,14 @@ Three settings have to agree for this to work, and dropping any one of them quie
 - fzf-tab is sourced **before** zsh-autosuggestions and zsh-syntax-highlighting, since those wrap the same widget.
 
 The trailing `r:|?=**` matcher is a fuzzy fallback that only runs when nothing else matched. It matches non-contiguously, so a query like `osmo` also pulls in `cosmos` — the picker is there to choose between them.
+
+### Herdr's own completions
+
+`herdr completion zsh` writes a 1,700-line `#compdef` function, not something to `eval`, so it goes in `fpath` as `~/.zsh/completions/_herdr`. That gets `herdr <Tab>` offering all 18 subcommands with their descriptions, `herdr pane <Tab>` offering 25, and the enum flags offering only their real values — `--direction` gives `right down`, `channel set` gives `stable preview`. The completion file is also a more complete command list than `herdr --help`, which omits `terminal` and `plugin`.
+
+Both the directory and the file are created by the shell, not by `install.sh`, and the file is rewritten whenever the `herdr` binary is newer than it — Herdr self-updates, so a file generated once would go stale on new flags. Two `stat` calls per startup, measured at 0.014s. `compinit` picks up a newly written file even with a warm `.zcompdump`, so nothing has to invalidate the cache.
+
+On a machine without Herdr the whole block is skipped: `command -v herdr` fails, so no directory is made and `fpath` is untouched.
 
 ### Automatic Multiplexer
 When the session is interactive, arrives over SSH, and is not already inside a multiplexer, the shell attaches to one. [Herdr](../herdr) is used where it is installed, and [tmux](../tmux) otherwise. Local shells are left alone.
