@@ -102,10 +102,10 @@ Herdr leaves all three unbound by default. Unlike the workspace picker these are
 
 ### GitHub
 
-- `Shift + I`: The open issues involving me, in a popup.
-- `Shift + P`: The open pull requests involving me, in a popup.
+- `Shift + I`: The open issues involving me, grouped by repository, in a popup.
+- `Shift + P`: The open pull requests involving me, grouped by repository, in a popup.
 
-Both are `[[keys.command]]` entries running `gh search` piped into `fzf`, with `gh issue view` / `gh pr view` as the preview — Herdr has no action of its own for this. `--involves` rather than `--assignee`, which covers author, reviewer and mentions too and returns nothing at all for pull requests here. `--limit 100` is well past the current counts; `gh` truncates silently, so if fzf's counter ever reads `100/100`, raise it.
+Both are `[[keys.command]]` entries running `gh search` through `sort` into `fzf`, with `gh issue view` / `gh pr view` as the preview — Herdr has no action of its own for this. `--involves` rather than `--assignee`, which covers author, reviewer and mentions too and returns nothing at all for pull requests here. `sort -s -k1,1` keys on the repository field alone, and `-s` is what keeps each repository's rows in the newest-first order `gh` returned. `--limit 100` is well past the current counts; `gh` truncates silently, so if fzf's counter ever reads `100/100`, raise it.
 
 ### Inside the Picker
 

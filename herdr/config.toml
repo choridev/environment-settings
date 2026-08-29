@@ -197,17 +197,19 @@ delivery = "herdr"
 #
 # No Herdr action for this, so a custom command earns its keep here in a way the
 # swap and focus ones did not. type = "popup" is session-modal, so the tab layout
-# is untouched. fzf rather than a pager: this returns nearly 60 rows, which want
-# filtering, and the preview turns the list into something readable.
+# is untouched. fzf rather than a pager: the list is long enough to want
+# filtering, and the preview turns it into something readable.
 #
 # '--involves' covers author, assignee, reviewer and mentions. The limit is well
 # past the current count on purpose — at 40 the list was silently truncated.
+# 'sort -s -k1,1' groups by repository on the first field only, so -s keeps each
+# group in the newest-first order gh returned.
 [[keys.command]]
 key = "prefix+shift+i"
 type = "popup"
 width = "90%"
 height = "80%"
-command = '''gh search issues --involves=@me --state=open --limit 100 --json repository,number,title,updatedAt --template '{{range .}}{{printf "%-28s %-7v %s  (%s)\n" .repository.nameWithOwner .number .title (timeago .updatedAt)}}{{end}}' | fzf --reverse --header="issues involving me" --preview "gh issue view {2} --repo {1}" --preview-window=right:55%:wrap'''
+command = '''gh search issues --involves=@me --state=open --limit 100 --json repository,number,title,updatedAt --template '{{range .}}{{printf "%-28s %-7v %s  (%s)\n" .repository.nameWithOwner .number .title (timeago .updatedAt)}}{{end}}' | sort -s -k1,1 | fzf --reverse --header="issues involving me" --preview "gh issue view {2} --repo {1}" --preview-window=right:55%:wrap'''
 
 # Pull requests, same shape as the issues popup above. '--involves' is wider than
 # '--assignee', which returns nothing here: it covers author, assignee, reviewer
@@ -217,4 +219,4 @@ key = "prefix+shift+p"
 type = "popup"
 width = "90%"
 height = "80%"
-command = '''gh search prs --involves=@me --state=open --limit 100 --json repository,number,title,updatedAt --template '{{range .}}{{printf "%-28s %-7v %s  (%s)\n" .repository.nameWithOwner .number .title (timeago .updatedAt)}}{{end}}' | fzf --reverse --header="pull requests involving me" --preview "gh pr view {2} --repo {1}" --preview-window=right:55%:wrap'''
+command = '''gh search prs --involves=@me --state=open --limit 100 --json repository,number,title,updatedAt --template '{{range .}}{{printf "%-28s %-7v %s  (%s)\n" .repository.nameWithOwner .number .title (timeago .updatedAt)}}{{end}}' | sort -s -k1,1 | fzf --reverse --header="pull requests involving me" --preview "gh pr view {2} --repo {1}" --preview-window=right:55%:wrap'''
