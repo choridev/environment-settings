@@ -2,10 +2,23 @@
 
 echo "🚀 Starting Herdr environment auto-setup..."
 
-# 0. Check dependencies (herdr)
+# 0. Check dependencies. Only herdr is hard: gh and fzf are needed by the two
+# GitHub popups and by nothing else, so a missing one costs two keybindings
+# rather than the configuration.
 if ! command -v herdr &> /dev/null; then
     echo "❌ Error: 'herdr' is not installed. Please install herdr first."
     exit 1
+fi
+
+for cmd in gh fzf; do
+    if ! command -v "$cmd" &> /dev/null; then
+        echo "⚠️  Warning: '$cmd' is not installed. The issue and PR popups"
+        echo "   (Ctrl+t Shift+I / Shift+P) will not work until it is."
+    fi
+done
+
+if command -v gh &> /dev/null && ! gh auth status &> /dev/null; then
+    echo "⚠️  Warning: 'gh' is not authenticated. Run 'gh auth login' for the popups."
 fi
 
 # 1. Check Herdr Version. This is the version the configuration was written and

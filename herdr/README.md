@@ -4,6 +4,13 @@ A [Herdr](https://herdr.dev) configuration (`config.toml`) keyed to match the Tm
 
 Herdr is a terminal workspace manager built around AI coding agents. It is prefix-driven like Tmux, so porting the Tmux keymap is a matter of renaming keys rather than rebuilding it around modes.
 
+## ⚠️ Requirements
+- **[Herdr](https://herdr.dev)** — `install.sh` refuses to run without it
+- **[gh](https://cli.github.com)**, authenticated — required by the issue and PR popups only
+- **fzf** — same, and also the picker the [`../zsh`](../zsh) setup leans on throughout
+
+`install.sh` only warns about `gh` and `fzf`: a missing one costs the two GitHub keybindings, not the configuration.
+
 ## 🚀 Installation (Automated)
 
 You can easily set up this configuration on any new machine using the provided automated installation script.
@@ -56,7 +63,7 @@ Press **`Ctrl + t`** first, then:
 - `\`: Split into two panes side by side. Herdr names this `split_vertical` after the divider, the same convention the `.tmux.conf` comments use.
 - `-`: Split into two panes stacked top and bottom (`split_horizontal`).
 - `[` / `]`: Previous / next pane.
-- `;`: Back to the pane you were on before this one.
+- `;`: Rename the pane. Next to the `,` that renames a tab; Herdr's own `prefix+shift+p` went to the pull-request popup, and Tmux's last-pane on `;` is given up for this.
 - `h` `j` `k` `l` or `←` `↓` `↑` `→`: Move focus in that direction. Both sets work.
 - `v`: Copy mode. `h` `j` `k` `l`, `w`/`b`/`e`, `{`/`}` and `PageUp`/`PageDown` to move, `/` or `?` to search and `n`/`N` to repeat, `v` or Space to select, `y` to copy, `q` to leave. Herdr's default is `[`, taken here by pane cycling.
 - `e`: Open the whole scrollback in `$EDITOR`.
@@ -99,6 +106,13 @@ Herdr leaves all three unbound by default. Unlike the workspace picker these are
 ### Session
 
 - `d`: Detach. `w`: Workspace picker. `?`: Help. `b`: Toggle the sidebar.
+
+### GitHub
+
+- `Shift + I`: The open issues involving me, grouped by repository, in a popup.
+- `Shift + P`: The open pull requests involving me, grouped by repository, in a popup.
+
+Both are `[[keys.command]]` entries running `gh search` through `sort` into `fzf`, with `gh issue view` / `gh pr view` as the preview — Herdr has no action of its own for this. `--involves` rather than `--assignee`, which covers author, reviewer and mentions too and returns nothing at all for pull requests here. `sort -s -k1,1` keys on the repository field alone, and `-s` is what keeps each repository's rows in the newest-first order `gh` returned. `--limit 100` is well past the current counts; `gh` truncates silently, so if fzf's counter ever reads `100/100`, raise it.
 
 ### Inside the Picker
 
