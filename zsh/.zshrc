@@ -2,7 +2,10 @@
 typeset -U path PATH
 path=("$HOME/.local/bin" $path /usr/local/go/bin /usr/local/nvim/bin)
 export EDITOR=nvim VISUAL=nvim
-export LESS='-R -F'
+# -R keeps colour escapes. No -F: on piped input it quits when the output is
+# shorter than one screen, so 'cmd | less' would sometimes page and sometimes
+# flash past. A file argument pages either way.
+export LESS='-R'
 
 # Multiplexer: Herdr where it exists, Tmux on machines without it.
 #
