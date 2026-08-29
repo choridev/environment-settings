@@ -207,7 +207,7 @@ key = "prefix+shift+i"
 type = "popup"
 width = "90%"
 height = "80%"
-command = '''gh search issues --involves=@me --state=open --limit 100 --json repository,number,title,updatedAt --template '{{range .}}{{printf "%-28s %-7v %s  (%s)\n" .repository.nameWithOwner .number .title (timeago .updatedAt)}}{{end}}' | fzf --reverse --header="issues assigned to me" --preview "gh issue view {2} --repo {1}" --preview-window=right:55%:wrap'''
+command = '''gh search issues --involves=@me --state=open --limit 100 --json repository,number,title,updatedAt --template '{{range .}}{{printf "%-28s %-7v %s  (%s)\n" .repository.nameWithOwner .number .title (timeago .updatedAt)}}{{end}}' | fzf --reverse --header="issues involving me" --preview "gh issue view {2} --repo {1}" --preview-window=right:55%:wrap'''
 
 # Pull requests, same shape as the issues popup above. '--involves' is wider than
 # '--assignee', which returns nothing here: it covers author, assignee, reviewer
