@@ -56,7 +56,7 @@ Press **`Ctrl + t`** first, then:
 - `\`: Split into two panes side by side. Herdr names this `split_vertical` after the divider, the same convention the `.tmux.conf` comments use.
 - `-`: Split into two panes stacked top and bottom (`split_horizontal`).
 - `[` / `]`: Previous / next pane.
-- `;`: Back to the pane you were on before this one.
+- `;`: Rename the pane. Next to the `,` that renames a tab; Herdr's own `prefix+shift+p` went to the pull-request popup, and Tmux's last-pane on `;` is given up for this.
 - `h` `j` `k` `l` or `←` `↓` `↑` `→`: Move focus in that direction. Both sets work.
 - `v`: Copy mode. `h` `j` `k` `l`, `w`/`b`/`e`, `{`/`}` and `PageUp`/`PageDown` to move, `/` or `?` to search and `n`/`N` to repeat, `v` or Space to select, `y` to copy, `q` to leave. Herdr's default is `[`, taken here by pane cycling.
 - `e`: Open the whole scrollback in `$EDITOR`.
@@ -99,6 +99,13 @@ Herdr leaves all three unbound by default. Unlike the workspace picker these are
 ### Session
 
 - `d`: Detach. `w`: Workspace picker. `?`: Help. `b`: Toggle the sidebar.
+
+### GitHub
+
+- `Shift + I`: The open issues involving me, in a popup.
+- `Shift + P`: The open pull requests involving me, in a popup.
+
+Both are `[[keys.command]]` entries running `gh search` piped into `fzf`, with `gh issue view` / `gh pr view` as the preview — Herdr has no action of its own for this. `--involves` rather than `--assignee`, which covers author, reviewer and mentions too and returns nothing at all for pull requests here. `--limit 100` is well past the current counts; `gh` truncates silently, so if fzf's counter ever reads `100/100`, raise it.
 
 ### Inside the Picker
 
