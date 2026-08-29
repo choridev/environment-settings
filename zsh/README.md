@@ -5,7 +5,7 @@ A fast, portable Zsh setup built around a Starship prompt, a persistent SSH agen
 ## ⚠️ Requirements
 - **Zsh**
 - **Git** and **curl** (Required to clone the plugins and install Starship)
-- **fzf** (Required by the `ssha` host picker; without it `ssha` falls back to a numbered list)
+- **fzf** (`install.sh` requires it, and the completion picker, `ssha` and Herdr's GitHub popups all lean on it. `ssha` alone keeps a numbered-list fallback, for a machine that loses fzf after the install)
 - A **Nerd Font** (Optional, but recommended so the Starship prompt renders cleanly)
 
 > [!NOTE]

@@ -4,6 +4,13 @@ A [Herdr](https://herdr.dev) configuration (`config.toml`) keyed to match the Tm
 
 Herdr is a terminal workspace manager built around AI coding agents. It is prefix-driven like Tmux, so porting the Tmux keymap is a matter of renaming keys rather than rebuilding it around modes.
 
+## ⚠️ Requirements
+- **[Herdr](https://herdr.dev)** — `install.sh` refuses to run without it
+- **[gh](https://cli.github.com)**, authenticated — required by the issue and PR popups only
+- **fzf** — same, and also the picker the [`../zsh`](../zsh) setup leans on throughout
+
+`install.sh` only warns about `gh` and `fzf`: a missing one costs the two GitHub keybindings, not the configuration.
+
 ## 🚀 Installation (Automated)
 
 You can easily set up this configuration on any new machine using the provided automated installation script.
