@@ -25,7 +25,7 @@ chmod +x install.sh
 ```
 
 > [!NOTE]
-> The script is **idempotent and safe**. It checks for `herdr`, safely backs up any existing `config.toml`, creates a **symbolic link** (`~/.config/herdr/config.toml -> repo/config.toml`) for real-time synchronization, and asks Herdr itself to parse the result so a broken config fails the install instead of your next session.
+> The script is **idempotent and safe**. It checks for `herdr`, safely backs up any existing `config.toml`, creates a **symbolic link** (`~/.config/herdr/config.toml -> repo/config.toml`) for real-time synchronization, asks Herdr itself to parse the result so a broken config fails the install instead of your next session, and writes `herdr --skill` to `~/.claude/skills/herdr/SKILL.md`.
 
 > [!NOTE]
 > Only the file is linked, not the directory. Herdr keeps its sockets, logs and `session.json` in `~/.config/herdr`, and linking the whole directory would drag them into this repository.
@@ -38,9 +38,12 @@ chmod +x install.sh
 - **Tmux Prefix**: `Ctrl + t`, replacing Herdr's own `Ctrl + b`, matching [`../tmux`](../tmux).
 - **Theme Follows the Terminal**: `auto_switch` with `catppuccin-latte` for light and `catppuccin` for dark, so the colours track the host terminal instead of being pinned to one.
 - **Onboarding Off**: `onboarding = false` skips the first-run walkthrough.
+- **In-App Toasts**: `ui.toast.delivery = "herdr"`, on from `off`. Fires when a background agent finishes or needs input, and only if it is still in that state a second later. `terminal` and `system` hand the popup to the host instead, which a session reached over SSH cannot rely on. The copied-to-clipboard popup is separate and on by default.
 - **50 MB of Scrollback**: `scrollback_limit_bytes`, 5x the default. The limit is bytes, not lines, and a row costs its full pane width — about 9 bytes a cell — so lines ≈ limit / (columns × 9) however short the lines are. A full-width pane here is 268 columns: ~4,150 lines on the default, ~20,700 at 50 MB. Two things it does not do: a pane keeps the limit it was born with, so `herdr server reload-config` reaches only panes opened afterwards, and rows belonging to the alternate screen — pagers, editors, TUI agents — never enter the scrollback at any size.
 
 Shell completions are wired up on the [`../zsh`](../zsh) side: `herdr completion zsh` produces a `#compdef` file that the `.zshrc` drops into `fpath` and regenerates whenever the binary changes.
+
+`herdr --skill` prints Herdr's agent skill file — the instructions an AI agent needs to drive `pane read`, `pane run` and `pane wait-output`. `install.sh` writes it to `~/.claude/skills/herdr/SKILL.md` so Claude Code loads it on its own instead of being asked to run the command. It describes the CLI surface, so re-run the installer after a Herdr update to refresh it.
 
 Everything else is left at Herdr's defaults. `herdr --default-config` prints the full reference, and `herdr config check` validates this file — it catches unknown keys, invalid key syntax, *and* two actions claiming the same chord.
 

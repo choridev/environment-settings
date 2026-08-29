@@ -15,7 +15,7 @@ fi
 TESTED_VERSION="0.8.2"
 CURRENT_VERSION=$(herdr --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
 
-echo "🔍 1/5: Checking Herdr version..."
+echo "🔍 1/6: Checking Herdr version..."
 if [ -n "$CURRENT_VERSION" ]; then
     LOWEST_VERSION=$(printf '%s\n' "$TESTED_VERSION" "$CURRENT_VERSION" | sort -V | head -n1)
     if [ "$LOWEST_VERSION" != "$TESTED_VERSION" ]; then
@@ -29,7 +29,7 @@ else
 fi
 
 # 2. Check for the template file (Fail-fast mechanism)
-echo "📂 2/5: Checking for template config.toml..."
+echo "📂 2/6: Checking for template config.toml..."
 if [ ! -f "config.toml" ]; then
     echo "❌ Error: config.toml file not found in the current directory. Skipping setup."
     exit 1
@@ -44,7 +44,7 @@ CONFIG_FILE="$CONFIG_DIR/config.toml"
 mkdir -p "$CONFIG_DIR"
 
 # 3. Backup existing configuration safely (Symlink aware)
-echo "💾 3/5: Checking for existing Herdr configuration..."
+echo "💾 3/6: Checking for existing Herdr configuration..."
 if [ -f "$CONFIG_FILE" ] || [ -h "$CONFIG_FILE" ]; then
     # If it is already correctly symlinked, skip the backup
     if [ "$(readlink "$CONFIG_FILE")" = "$DOTFILES_DIR/config.toml" ]; then
@@ -60,12 +60,12 @@ fi
 
 # 4. Create Symbolic Link (Only the config file — Herdr keeps its sockets,
 # logs and session.json in this same directory)
-echo "🔗 4/5: Creating a symbolic link for config.toml..."
+echo "🔗 4/6: Creating a symbolic link for config.toml..."
 ln -sf "$DOTFILES_DIR/config.toml" "$CONFIG_FILE"
 echo "✅ Symlink created! ($CONFIG_FILE -> $DOTFILES_DIR/config.toml)"
 
 # 5. Verify that Herdr accepts the configuration, then reload a running server
-echo "🔌 5/5: Verifying the configuration..."
+echo "🔌 5/6: Verifying the configuration..."
 CHECK_OUTPUT=$(herdr config check 2>&1)
 if echo "$CHECK_OUTPUT" | grep -q '^config: ok'; then
     echo "✅ Configuration parsed successfully."
@@ -80,6 +80,17 @@ if herdr server reload-config >/dev/null 2>&1; then
     echo "⚠️  The prefix is now Ctrl+t, not Ctrl+b — including in this session."
 else
     echo "💡 No running Herdr server to reload. The config applies on next start."
+fi
+
+# 6. Install Herdr's agent skill file so Claude Code loads it without being
+# asked to run `herdr --skill`. Regenerated here because the file describes the
+# CLI surface, which moves as Herdr updates.
+SKILL_DIR="$HOME/.claude/skills/herdr"
+echo "🤖 6/6: Installing the agent skill file..."
+if mkdir -p "$SKILL_DIR" && herdr --skill > "$SKILL_DIR/SKILL.md"; then
+    echo "✅ Skill written to $SKILL_DIR/SKILL.md"
+else
+    echo "⚠️  Could not write the skill file. Claude Code will fall back to 'herdr --skill'."
 fi
 
 echo ""

@@ -178,3 +178,14 @@ swap_pane_right = "prefix+}"
 # editors, TUI agents — whose rows never enter the scrollback at all.
 [advanced]
 scrollback_limit_bytes = 50000000
+
+# ---------------------------------------------------------------------------
+# Notifications
+# ---------------------------------------------------------------------------
+#
+# Off by default. 'herdr' draws the toast inside the Herdr frame, which works
+# the same over SSH as locally; 'terminal' and 'system' hand it to the host,
+# which a remote session cannot rely on. Fires when a background agent finishes
+# or needs input, and only if it is still in that state a second later.
+[ui.toast]
+delivery = "herdr"
