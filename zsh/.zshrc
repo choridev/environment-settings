@@ -38,9 +38,10 @@ else
 fi
 
 # Completion
-# Herdr ships a #compdef file to drop in fpath, not something to eval, and it
-# self-updates — so regenerate whenever the binary is newer. Both lines have to
-# come before compinit, which picks up a new file even with a warm .zcompdump.
+# Herdr generates two files that describe its own CLI — a #compdef function to
+# drop in fpath, and the agent skill file Claude Code reads — and it self-updates,
+# so both are rewritten whenever the binary is newer than them. This has to come
+# before compinit, which picks up a new file even with a warm .zcompdump.
 if _herdr_bin=$(command -v herdr 2>/dev/null); then
     _zsh_comp="$HOME/.zsh/completions"
     mkdir -p "$_zsh_comp"
@@ -48,6 +49,15 @@ if _herdr_bin=$(command -v herdr 2>/dev/null); then
         || herdr completion zsh > "$_zsh_comp/_herdr"
     fpath=("$_zsh_comp" $fpath)
     unset _zsh_comp
+
+    # Only where Claude Code already lives; this should not create its config.
+    if [[ -d "$HOME/.claude" ]]; then
+        _herdr_skill="$HOME/.claude/skills/herdr"
+        mkdir -p "$_herdr_skill"
+        [[ "$_herdr_skill/SKILL.md" -nt "$_herdr_bin" ]] \
+            || herdr --skill > "$_herdr_skill/SKILL.md"
+        unset _herdr_skill
+    fi
 fi
 unset _herdr_bin
 
