@@ -86,6 +86,8 @@ The trailing `r:|?=**` matcher is a fuzzy fallback that only runs when nothing e
 
 Both the directory and the file are created by the shell, not by `install.sh`, and the file is rewritten whenever the `herdr` binary is newer than it — Herdr self-updates, so a file generated once would go stale on new flags. Two `stat` calls per startup, measured at 0.014s. `compinit` picks up a newly written file even with a warm `.zcompdump`, so nothing has to invalidate the cache.
 
+The same block also refreshes `~/.claude/skills/herdr/SKILL.md` from `herdr --skill`, on the same binary-is-newer test, so the two files Herdr generates about its own CLI can never drift apart. That half is skipped unless `~/.claude` already exists — the shell should not be the thing that creates Claude Code's config directory.
+
 On a machine without Herdr the whole block is skipped: `command -v herdr` fails, so no directory is made and `fpath` is untouched.
 
 ### Automatic Multiplexer
