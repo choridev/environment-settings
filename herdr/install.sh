@@ -2,7 +2,7 @@
 
 echo "🚀 Starting Herdr environment auto-setup..."
 
-# 0. Check dependencies. Only herdr is hard: gh and fzf are needed by the two
+# 0. Check dependencies. Only herdr is hard: gh, fzf and jq are needed by the two
 # GitHub popups and by nothing else, so a missing one costs two keybindings
 # rather than the configuration.
 if ! command -v herdr &> /dev/null; then
@@ -10,7 +10,7 @@ if ! command -v herdr &> /dev/null; then
     exit 1
 fi
 
-for cmd in gh fzf; do
+for cmd in gh fzf jq; do
     if ! command -v "$cmd" &> /dev/null; then
         echo "⚠️  Warning: '$cmd' is not installed. The issue and PR popups"
         echo "   (Ctrl+t Shift+I / Shift+P) will not work until it is."
@@ -28,7 +28,7 @@ fi
 TESTED_VERSION="0.8.2"
 CURRENT_VERSION=$(herdr --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
 
-echo "🔍 1/5: Checking Herdr version..."
+echo "🔍 1/6: Checking Herdr version..."
 if [ -n "$CURRENT_VERSION" ]; then
     LOWEST_VERSION=$(printf '%s\n' "$TESTED_VERSION" "$CURRENT_VERSION" | sort -V | head -n1)
     if [ "$LOWEST_VERSION" != "$TESTED_VERSION" ]; then
@@ -42,7 +42,7 @@ else
 fi
 
 # 2. Check for the template file (Fail-fast mechanism)
-echo "📂 2/5: Checking for template config.toml..."
+echo "📂 2/6: Checking for template config.toml..."
 if [ ! -f "config.toml" ]; then
     echo "❌ Error: config.toml file not found in the current directory. Skipping setup."
     exit 1
@@ -57,7 +57,7 @@ CONFIG_FILE="$CONFIG_DIR/config.toml"
 mkdir -p "$CONFIG_DIR"
 
 # 3. Backup existing configuration safely (Symlink aware)
-echo "💾 3/5: Checking for existing Herdr configuration..."
+echo "💾 3/6: Checking for existing Herdr configuration..."
 if [ -f "$CONFIG_FILE" ] || [ -h "$CONFIG_FILE" ]; then
     # If it is already correctly symlinked, skip the backup
     if [ "$(readlink "$CONFIG_FILE")" = "$DOTFILES_DIR/config.toml" ]; then
@@ -73,12 +73,18 @@ fi
 
 # 4. Create Symbolic Link (Only the config file — Herdr keeps its sockets,
 # logs and session.json in this same directory)
-echo "🔗 4/5: Creating a symbolic link for config.toml..."
+echo "🔗 4/6: Creating a symbolic link for config.toml..."
 ln -sf "$DOTFILES_DIR/config.toml" "$CONFIG_FILE"
 echo "✅ Symlink created! ($CONFIG_FILE -> $DOTFILES_DIR/config.toml)"
 
-# 5. Verify that Herdr accepts the configuration, then reload a running server
-echo "🔌 5/5: Verifying the configuration..."
+# 5. Link the picker script next to the config. Individually, like config.toml,
+# so Herdr's sockets and logs stay out of the repository.
+echo "🔗 5/6: Linking the GitHub picker script..."
+ln -sf "$DOTFILES_DIR/scripts/gh-picker" "$CONFIG_DIR/gh-picker"
+echo "✅ Symlink created! ($CONFIG_DIR/gh-picker -> $DOTFILES_DIR/scripts/gh-picker)"
+
+# 6. Verify that Herdr accepts the configuration, then reload a running server
+echo "🔌 6/6: Verifying the configuration..."
 CHECK_OUTPUT=$(herdr config check 2>&1)
 if echo "$CHECK_OUTPUT" | grep -q '^config: ok'; then
     echo "✅ Configuration parsed successfully."

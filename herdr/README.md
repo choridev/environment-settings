@@ -8,8 +8,9 @@ Herdr is a terminal workspace manager built around AI coding agents. It is prefi
 - **[Herdr](https://herdr.dev)** — `install.sh` refuses to run without it
 - **[gh](https://cli.github.com)**, authenticated — required by the issue and PR popups only
 - **fzf** — same, and also the picker the [`../zsh`](../zsh) setup leans on throughout
+- **jq** — same; `scripts/gh-picker` shapes `gh`'s JSON with it
 
-`install.sh` only warns about `gh` and `fzf`: a missing one costs the two GitHub keybindings, not the configuration.
+`install.sh` only warns about `gh`, `fzf` and `jq`: a missing one costs the two GitHub keybindings, not the configuration.
 
 ## 🚀 Installation (Automated)
 
@@ -111,8 +112,20 @@ Herdr leaves all three unbound by default. Unlike the workspace picker these are
 
 - `Shift + I`: The open issues involving me, grouped by repository, in a popup.
 - `Shift + P`: The open pull requests involving me, grouped by repository, in a popup.
+- Inside either: `alt-j` / `alt-k` scroll the preview a line, `alt-d` / `alt-u` half a page.
 
-Both are `[[keys.command]]` entries running `gh search` through `sort` into `fzf`, with `gh issue view` / `gh pr view` as the preview — Herdr has no action of its own for this. `--involves` rather than `--assignee`, which covers author, reviewer and mentions too and returns nothing at all for pull requests here. `sort -s -k1,1` keys on the repository field alone, and `-s` is what keeps each repository's rows in the newest-first order `gh` returned. `--limit 100` is well past the current counts; `gh` truncates silently, so if fzf's counter ever reads `100/100`, raise it.
+Both are `[[keys.command]]` entries calling `scripts/gh-picker`, which `install.sh` symlinks next to `config.toml` — Herdr has no action of its own for this. `--involves` rather than `--assignee`, which covers author, reviewer and mentions too and returns nothing at all for pull requests here. `--limit 100` is well past the current counts; `gh` truncates silently, so if fzf's counter ever reads `100/100`, raise it.
+
+> [!NOTE]
+> **The script exists because fzf re-runs its preview on every focus change and caches nothing.** An inline pipeline spent a request each time the cursor moved, and another on every revisit — measured at 1.0–1.6s a row. The script instead fetches the list, every body and every comment up front, in about 3.5s, and the preview only reads a file. `gh search` returns bodies but not comment bodies, so the comments take one request each, ten at a time.
+>
+> That wait is narrated on stderr — `fetching issues…`, then `24 found, reading 19 comment thread(s)…` — because fzf draws nothing until it has input. The lines vanish when it opens, since fzf takes the alternate screen.
+>
+> Comments land after a body that is often hundreds of lines long, so the first line of the preview says how many are below and `alt-d` gets there in a few presses. The pairs follow Vim rather than the preview's own geometry: `j`/`k` a line, `d`/`u` half a page. `alt`-prefixed rather than plain `J`/`K`, which would cost typing uppercase in the query; `ctrl-shift-j` is not an option at all, since the terminal sends the same `0x0a` for it as for `ctrl-j`.
+>
+> Those `alt` keys need `macos-option-as-alt = true` in [`../ghostty`](../ghostty). Without it macOS composes characters instead — Option+j arrives as `∆`, Option+k as `˚` — and nothing is bound to those.
+>
+> The cache is a `mktemp -d` under `$XDG_RUNTIME_DIR` when the session has one — tmpfs, mode 700, so private repository text never reaches the disk. It is removed on exit, on `HUP`/`INT`/`TERM`, and anything a `SIGKILL` left behind is swept on the next run.
 
 ### Inside the Picker
 
