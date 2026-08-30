@@ -9,3 +9,6 @@ term = xterm-256color
 
 keybind = ctrl+key_i=text:\x09
 keybind = ctrl+key_m=text:\x0d
+
+# Alt, not character composition: Option+j was arriving as '∆'.
+macos-option-as-alt = true
