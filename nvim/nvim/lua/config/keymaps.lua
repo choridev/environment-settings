@@ -31,3 +31,10 @@ mapKey("<leader>h", ":nohlsearch<CR>")
 -- Indentation
 mapKey("<", "<gv", "v")
 mapKey(">", ">gv", "v")
+
+-- Vertical motion over wrapped lines
+-- 'wrap' is on, so a bare j/k skips the whole logical line and looks like it
+-- jumped. Move by screen row instead, but keep a count on logical lines so
+-- 5j still lands where the line numbers say it will.
+mapKey("j", "v:count == 0 ? 'gj' : 'j'", { "n", "x" }, { expr = true })
+mapKey("k", "v:count == 0 ? 'gk' : 'k'", { "n", "x" }, { expr = true })
