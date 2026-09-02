@@ -1,6 +1,7 @@
 " ==========================================
 " 1. General Editor Settings
 " ==========================================
+set nocompatible        " Never fall back to vi, however this file is loaded
 set nu                  " Show line numbers
 set laststatus=2        " Always show the status line
 set ruler               " Show the cursor position
