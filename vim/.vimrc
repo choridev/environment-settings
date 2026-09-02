@@ -41,6 +41,20 @@ if has("autocmd")
     au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
 
+" Copy every yank to the system clipboard: this Vim has no +clipboard, so the
+" OSC 52 sequence goes straight to the terminal. Reads are refused, so p stays local.
+if exists("*echoraw")
+    function! s:Osc52Yank() abort
+        if v:event.operator !=# 'y'
+            return
+        endif
+        let l:text = join(v:event.regcontents, "\n") . (v:event.regtype ==# 'V' ? "\n" : '')
+        let l:b64 = substitute(system('base64', l:text), '\n', '', 'g')
+        call echoraw("\e]52;c;" . l:b64 . "\x07")
+    endfunction
+    au TextYankPost * call s:Osc52Yank()
+endif
+
 " ==========================================
 " 5. Plugin Management (vim-plug)
 " ==========================================
