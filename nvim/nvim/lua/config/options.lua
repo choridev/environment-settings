@@ -8,11 +8,12 @@ opt.expandtab = true
 opt.autoindent = true
 opt.smartindent = true
 opt.wrap = true
--- Wrap at word boundaries, hold the wrapped part at the line's own indent, and
--- flag it so a continuation is never misread as a new line.
+-- Wrap at word boundaries and hold the wrapped part at the line's own indent.
+-- No 'showbreak' marker: it is drawn after the indent, so it would push the
+-- continuation two columns right of the text it belongs to. The empty number
+-- column already marks a wrapped line.
 opt.linebreak = true
 opt.breakindent = true
-opt.showbreak = "\u{21B3} "
 opt.encoding = "UTF-8"
 
 -- UI & View
