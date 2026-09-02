@@ -7,7 +7,12 @@ opt.shiftwidth = 4
 opt.expandtab = true
 opt.autoindent = true
 opt.smartindent = true
-opt.wrap = false
+opt.wrap = true
+-- Wrap at word boundaries, hold the wrapped part at the line's own indent, and
+-- flag it so a continuation is never misread as a new line.
+opt.linebreak = true
+opt.breakindent = true
+opt.showbreak = "\u{21B3} "
 opt.encoding = "UTF-8"
 
 -- UI & View
