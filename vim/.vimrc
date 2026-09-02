@@ -8,6 +8,14 @@ set cursorline          " Highlight the current line
 set title               " Set the terminal title to the filename
 set mouse=a             " Enable mouse support in all modes
 set clipboard=unnamed   " Use system clipboard (Universal macOS/Linux)
+set linebreak           " Wrap long lines at word boundaries
+set breakindent         " Keep the wrapped part at the line's own indent
+
+" Move by screen row on wrapped lines; a count still moves by logical line
+nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
+nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
+xnoremap <expr> j v:count == 0 ? 'gj' : 'j'
+xnoremap <expr> k v:count == 0 ? 'gk' : 'k'
 
 " ==========================================
 " 2. Indentation & Tabs
