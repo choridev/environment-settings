@@ -33,7 +33,7 @@ mapKey("<", "<gv", "v")
 mapKey(">", ">gv", "v")
 
 -- Vertical motion over wrapped lines
--- Bare j/k skip the whole logical line; the count branch keeps 5j landing
--- where the line numbers say.
+-- Move by screen row, since a bare j/k skips the whole logical line. The count
+-- branch keeps 5j landing where the line numbers say.
 mapKey("j", "v:count == 0 ? 'gj' : 'j'", { "n", "x" }, { expr = true })
 mapKey("k", "v:count == 0 ? 'gk' : 'k'", { "n", "x" }, { expr = true })
