@@ -25,7 +25,7 @@ fi
 # verified against, not a known floor — older releases may well work, so a
 # mismatch only warns. Step 5 is what actually decides: it asks Herdr itself
 # whether it can parse the file.
-TESTED_VERSION="0.8.2"
+TESTED_VERSION="0.9.0"
 CURRENT_VERSION=$(herdr --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
 
 echo "🔍 1/6: Checking Herdr version..."
