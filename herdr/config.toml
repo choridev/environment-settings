@@ -181,6 +181,19 @@ swap_pane_right = "prefix+}"
 scrollback_limit_bytes = 50000000
 
 # ---------------------------------------------------------------------------
+# Pane borders
+# ---------------------------------------------------------------------------
+#
+# 'auto' by default, which frames a pane only once it has been split, so a
+# lone pane sits flush against the Herdr frame. 'always' frames it either way,
+# keeping the pane's edge in the same place whatever the split count. New in
+# 0.9.0; it only does anything while 'pane_outer_borders' is on, which is its
+# own default. This table has to precede [ui.toast]: TOML takes a parent after
+# its child, but reading it back is worse than writing it in order.
+[ui]
+pane_borders = "always"
+
+# ---------------------------------------------------------------------------
 # Notifications
 # ---------------------------------------------------------------------------
 #
