@@ -34,3 +34,8 @@
 # ==========================================
 [alias]
     lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+    d = diff
+    # 'diff' alone compares the index with the working tree, so it prints
+    # nothing once everything is staged. This is the other half.
+    ds = diff --staged
+    s = show
