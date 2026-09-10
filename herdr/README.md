@@ -78,7 +78,7 @@ Press **`Ctrl + t`** first, then:
 > `{` and `}` are `swap_pane_left` / `swap_pane_right`, not an exact port: Tmux's `swap-pane -U` / `-D` walk the pane order, while Herdr swaps with whatever sits in a given direction. In a plain row or column the two agree; in a nested layout they can differ. Only the horizontal pair is moved; `swap_pane_up` and `swap_pane_down` stay on their `prefix+shift+k` / `prefix+shift+j` defaults, so vertical swapping is there without a `.tmux.conf` counterpart.
 
 > [!IMPORTANT]
-> **`herdr --default-config` is not the whole list of settable keys, and `--help` is not the whole list of CLI flags.** `copy_mode`, `swap_pane_*` and `advanced.scrollback_limit_bytes` are all missing from that output, and `pane split --focus` is missing from its `--help`. Earlier revisions of this file recorded the first three as things Herdr could not do at all.
+> **`herdr --default-config` is not the whole list of settable keys, and `--help` is not the whole list of CLI flags.** `copy_mode` and `swap_pane_*` are missing from that output, and `workspace close --group` is missing from its own `--help`. The gap moves rather than closing: `advanced.scrollback_limit_bytes` and `pane split --focus` were both on this list until 0.9.0 began listing them. Earlier revisions of this file recorded `copy_mode`, `swap_pane_*` and `scrollback_limit_bytes` as things Herdr could not do at all.
 >
 > The authoritative list is the [Config reference](https://herdr.dev/docs/config-reference/), which has every one of those keys with its default; array values — `next_tab = ["prefix+n", "ctrl+alt+]"]` — are on the [Configuration](https://herdr.dev/docs/configuration/) page. Read those before concluding a setting does not exist.
 >
