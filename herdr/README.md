@@ -73,7 +73,7 @@ Press **`Ctrl + t`** first, then:
 - `z`: Zoom. `r`: Resize mode.
 
 > [!NOTE]
-> Herdr binds `close_pane` to `prefix+x` and `close_tab` to `prefix+shift+x`, and both take effect immediately. Both are emptied here. Tmux wraps its `x` and `&` in `confirm-before`; Herdr's only confirmation setting is `ui.confirm_close`, which by its own description covers closing a *workspace*, not a pane or a tab. Exit the shell to close a pane; closing the last pane in a tab closes the tab.
+> Herdr binds `close_pane` to `prefix+x` and `close_tab` to `prefix+shift+x`, and both take effect immediately. Both are emptied here. Tmux wraps its `x` and `&` in `confirm-before`; Herdr prompts only where a close ends something larger — a workspace, via `ui.confirm_close`, and since 0.9.2 the last tab in one. A pane never prompts. Exit the shell to close a pane; closing the last pane in a tab closes the tab.
 
 > [!NOTE]
 > `{` and `}` are `swap_pane_left` / `swap_pane_right`, not an exact port: Tmux's `swap-pane -U` / `-D` walk the pane order, while Herdr swaps with whatever sits in a given direction. In a plain row or column the two agree; in a nested layout they can differ. Only the horizontal pair is moved; `swap_pane_up` and `swap_pane_down` stay on their `prefix+shift+k` / `prefix+shift+j` defaults, so vertical swapping is there without a `.tmux.conf` counterpart.
