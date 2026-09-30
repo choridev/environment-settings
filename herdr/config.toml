@@ -205,6 +205,13 @@ pane_borders = "always"
 [ui.toast]
 delivery = "herdr"
 
+# On by default, playing an mp3 whenever an agent finishes or needs input.
+# Off here: the toast above already carries that signal, and where no mp3
+# player is installed the only result is a "sound playback failed" warning
+# in herdr-client.log, once per notification.
+[ui.sound]
+enabled = false
+
 # ---------------------------------------------------------------------------
 # GitHub issues involving me
 # ---------------------------------------------------------------------------
