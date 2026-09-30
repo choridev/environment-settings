@@ -41,10 +41,11 @@ cycle_pane_next = "prefix+]"
 rename_pane = "prefix+;"
 
 # Herdr binds close_pane to prefix+x and close_tab to prefix+shift+x, and both
-# take effect immediately. Tmux wraps its 'x' and '&' in confirm-before; Herdr's
-# only confirmation setting is ui.confirm_close, which by its own description
-# covers closing a *workspace*, not a pane or a tab. An unprompted close one key
-# from the prefix is not worth the keystroke it saves, so both are emptied.
+# take effect immediately. Tmux wraps its 'x' and '&' in confirm-before; Herdr
+# prompts only where a close ends something larger — a workspace, via
+# ui.confirm_close, and since 0.9.2 the last tab in one. A pane never prompts,
+# and that close one key from the prefix is not worth the keystroke it saves,
+# so both are emptied.
 #
 # What remains: exiting the shell closes a pane, closing the last pane in a tab
 # closes the tab, and prefix+shift+d still closes a workspace — that one does
