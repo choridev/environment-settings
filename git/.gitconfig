@@ -28,6 +28,10 @@
     gpgsign = true
 [gpg]
     format = ssh
+[gpg "ssh"]
+    # Needed to verify, not to sign: without it 'log --show-signature' and
+    # 'verify-commit' cannot tell whose key made an SSH signature.
+    allowedSignersFile = ~/.ssh/allowed_signers
 
 # ==========================================
 # 4. Aliases
