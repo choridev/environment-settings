@@ -74,7 +74,7 @@ Press **`Ctrl + t`** first, then:
 - `z`: Zoom. `r`: Resize mode.
 
 > [!NOTE]
-> Herdr binds `close_pane` to `prefix+x` and `close_tab` to `prefix+shift+x`, and both take effect immediately. Both are emptied here. Tmux wraps its `x` and `&` in `confirm-before`; Herdr prompts only where a close ends something larger — a workspace, via `ui.confirm_close`, and since 0.9.2 the last tab in one. A pane never prompts. Exit the shell to close a pane; closing the last pane in a tab closes the tab.
+> Herdr binds `close_pane` to `prefix+x` and `close_tab` to `prefix+shift+x`, and both take effect immediately. Both are emptied here. Tmux wraps its `x` and `&` in `confirm-before`; Herdr prompts only where a close ends something larger — a workspace, via `ui.confirm_close`, since 0.9.2 the last tab in one, and since 0.9.4 its only pane. Any other pane closes without asking. Exit the shell to close a pane; closing the last pane in a tab closes the tab.
 
 > [!NOTE]
 > `{` and `}` are `swap_pane_left` / `swap_pane_right`, not an exact port: Tmux's `swap-pane -U` / `-D` walk the pane order, while Herdr swaps with whatever sits in a given direction. In a plain row or column the two agree; in a nested layout they can differ. Only the horizontal pair is moved; `swap_pane_up` and `swap_pane_down` stay on their `prefix+shift+k` / `prefix+shift+j` defaults, so vertical swapping is there without a `.tmux.conf` counterpart.
@@ -146,4 +146,4 @@ Herdr's defaults are the other way round: workspaces on the arrow keys, panes on
 - **Synchronised input.** No action for it. `herdr pane input` sets right-click routing, not input broadcast, so the `.tmux.conf`'s `i` has nothing to map onto.
 - **Layout presets.** No `next-layout` action, so Tmux's `Space` has no home, and neither does `select-layout -E`.
 - **Break pane out to a window.** No action for Tmux's `!`.
-- **`x` and `&` confirmation.** Herdr closes panes and tabs without the `confirm-before` prompt Tmux wraps them in — `ui.confirm_close` covers only workspaces. So nothing here closes either one from the keyboard: `close_pane` and `close_tab` are both emptied, and `&` was never mapped. `prefix+shift+d` closes a workspace and does ask first.
+- **`x` and `&` confirmation.** Herdr closes panes and tabs without the `confirm-before` prompt Tmux wraps them in — `ui.confirm_close` covers only a workspace and, since 0.9.2 and 0.9.4, its last tab and only pane. So nothing here closes either one from the keyboard: `close_pane` and `close_tab` are both emptied, and `&` was never mapped. `prefix+shift+d` closes a workspace and does ask first.
